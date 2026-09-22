@@ -4,193 +4,1116 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>BridgeMind™ | AI-Assisted Bridge Rehabilitation & Disaster Recovery</title>
-  <meta name="description" content="BridgeMind is an AI-assisted decision support prototype for bridge rehabilitation, resilience, live roadway operations, and disaster recovery.">
+
+  <meta
+    name="description"
+    content="BridgeMind is an AI-assisted decision support prototype for bridge rehabilitation, resilience, live roadway operations, and disaster recovery."
+  >
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet@3.0.16/dist/esri-leaflet.css" crossorigin="">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/esri-leaflet@3.0.16/dist/esri-leaflet.css"
+    crossorigin=""
+  >
+
   <style>
     :root{
-      --navy:#0b2037;--navy2:#102c49;--steel:#2e5c8a;--blue:#4f83b3;--teal:#168a96;
-      --bg:#f3f6f8;--panel:#ffffff;--ink:#142433;--muted:#5f7180;--line:#dce5ea;
-      --red:#c24c3d;--amber:#d9922e;--green:#3d8a5c;--soft:#eaf1f6;
+      --navy:#0b2037;
+      --navy2:#102c49;
+      --steel:#2e5c8a;
+      --blue:#4f83b3;
+      --teal:#168a96;
+      --bg:#f3f6f8;
+      --panel:#ffffff;
+      --ink:#142433;
+      --muted:#5f7180;
+      --line:#dce5ea;
+      --red:#c24c3d;
+      --amber:#d9922e;
+      --green:#3d8a5c;
+      --soft:#eaf1f6;
       --shadow:0 18px 48px rgba(10,30,50,.08);
       --radius:16px;
     }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;background:linear-gradient(180deg,#f8fafb 0,#f3f6f8 42%,#eef3f6 100%);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif}
-    a{color:inherit}
-    .mono{font-family:"IBM Plex Mono",monospace}
-    .container{width:min(1240px,calc(100% - 36px));margin:auto}
-    .topline{height:4px;background:linear-gradient(90deg,var(--navy),var(--steel),var(--teal))}
-    header{position:sticky;top:0;z-index:1000;background:rgba(11,32,55,.94);backdrop-filter:blur(14px);color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
-    nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:12px 0}
-    .brand{display:flex;align-items:center;gap:11px;min-width:230px}
-    .brandmark{width:38px;height:38px;border-radius:11px;background:linear-gradient(145deg,#183b60,#0c2239);display:grid;place-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
-    .brandmark svg{width:25px;height:25px}
-    .brand h1{font-size:17px;letter-spacing:.15px;margin:0}
-    .brand small{display:block;font-size:10px;color:#b9cde0;margin-top:2px;font-family:"IBM Plex Mono",monospace}
-    .navlinks{display:flex;gap:20px;align-items:center}
-    .navlinks a{font-size:13px;color:#d8e7f2;text-decoration:none}
-    .navlinks a:hover{color:white}
-    .livepill{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid rgba(126,210,218,.25);border-radius:999px;background:rgba(22,138,150,.12);font-size:11px;font-family:"IBM Plex Mono",monospace}
-    .pulse{width:7px;height:7px;background:#6de0ce;border-radius:50%;box-shadow:0 0 0 0 rgba(109,224,206,.55);animation:pulse 2s infinite}
-    @keyframes pulse{70%{box-shadow:0 0 0 7px rgba(109,224,206,0)}100%{box-shadow:0 0 0 0 rgba(109,224,206,0)}}
-    .hero{padding:66px 0 32px;background:
-      radial-gradient(circle at 80% 15%,rgba(79,131,179,.28),transparent 28%),
-      linear-gradient(135deg,var(--navy),#123451 58%,#1b6170)}
-    .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center}
-    .eyebrow{display:inline-flex;gap:7px;align-items:center;font-size:11px;color:#b8d4ea;font-family:"IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
-    .eyebrow span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6de0ce}
-    .hero h2{margin:16px 0 12px;font-size:clamp(36px,5vw,60px);line-height:1.02;color:#fff;letter-spacing:-.03em}
-    .hero p{margin:0;color:#ccdeeb;font-size:17px;line-height:1.65;max-width:680px}
-    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
-    .btn{border:0;border-radius:11px;padding:11px 15px;font:600 13px "DM Sans",sans-serif;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
-    .btn-primary{background:#fff;color:var(--navy)}
-    .btn-ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff}
-    .hero-logo{border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 28px 70px rgba(0,0,0,.22);background:#051624}
-    .hero-logo img{display:block;width:100%;height:360px;object-fit:cover;object-position:center}
-    .hero-note{font-size:10px;color:#a9c1d3;margin-top:8px;text-align:right;font-family:"IBM Plex Mono",monospace}
-    .kpis{margin-top:-34px;position:relative;z-index:2}
-    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-    .kpi{background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:14px;padding:17px 18px;box-shadow:var(--shadow)}
-    .kpi .label{font-size:10px;color:var(--muted);font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.08em}
-    .kpi .value{font-size:30px;font-weight:700;color:var(--navy);margin-top:6px}
-    .kpi .sub{font-size:11px;color:var(--muted);margin-top:3px}
-    section{padding:54px 0}
-    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
-    .section-head h3{margin:0;font-size:28px;color:var(--navy);letter-spacing:-.02em}
-    .section-head p{margin:5px 0 0;color:var(--muted);font-size:13px;max-width:760px;line-height:1.6}
-    .grid2{display:grid;grid-template-columns:1.4fr .8fr;gap:18px}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
-    .card-title{font-weight:700;font-size:14px;color:var(--navy)}
-    .card-meta{font-size:10px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
-    #map{height:570px}
-    .map-wrap{position:relative}
-    .map-toolbar{position:absolute;top:14px;left:14px;z-index:500;display:flex;gap:7px;flex-wrap:wrap}
-    .map-toggle{font:600 11px "IBM Plex Mono",monospace;border:1px solid rgba(10,30,50,.15);background:rgba(255,255,255,.92);padding:7px 9px;border-radius:9px;cursor:pointer;box-shadow:0 6px 20px rgba(10,30,50,.08)}
-    .map-toggle.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-    .live-status{padding:10px 14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:11px}
-    .status-ok{color:var(--green);font-weight:700}
-    .status-warn{color:var(--amber);font-weight:700}
-    .side-stack{display:flex;flex-direction:column;gap:14px}
-    .detail{padding:16px}
-    .bridge-name{font-size:19px;font-weight:700;color:var(--navy);line-height:1.22}
-    .bridge-sub{font-size:11px;color:var(--muted);margin-top:4px}
-    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
-    .metric{background:#f7fafc;border:1px solid var(--line);border-radius:11px;padding:10px}
-    .metric .m-label{font-size:9px;color:var(--muted);font-family:"IBM Plex Mono",monospace;text-transform:uppercase}
-    .metric .m-val{font-size:14px;font-weight:700;margin-top:5px;color:var(--ink)}
-    .badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 8px;font-size:9px;font-weight:700;font-family:"IBM Plex Mono",monospace}
-    .badge-gray{background:#edf2f5;color:#536675}
-    .badge-green{background:#e7f4eb;color:#2d7449}
-    .badge-red{background:#f9e9e7;color:#a64236}
-    .detail-actions{display:flex;gap:8px;margin-top:15px;flex-wrap:wrap}
-    .smallbtn{padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:#fff;font-size:11px;font-weight:700;cursor:pointer}
-    .smallbtn.primary{background:var(--steel);border-color:var(--steel);color:#fff}
-    .feed-list{max-height:280px;overflow:auto}
-    .event{padding:11px 14px;border-bottom:1px solid var(--line)}
-    .event:last-child{border-bottom:0}
-    .event-row{display:flex;justify-content:space-between;gap:10px}
-    .event-title{font-size:11px;font-weight:700;color:var(--navy)}
-    .event-sev{font:700 9px "IBM Plex Mono",monospace}
-    .event-meta{font-size:9.5px;color:var(--muted);margin-top:4px;line-height:1.4}
-    .event-empty{padding:20px 15px;color:var(--muted);font-size:12px}
-    .traffic-card{padding:14px}
-    .traffic-map{height:390px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#eef3f5}
-    .traffic-map{position:relative}
-    .traffic-map iframe{width:100%;height:100%;border:0;background:#e9eef2}
-    .traffic-map:before{content:"Loading official FL511 traffic view…";position:absolute;inset:0;display:grid;place-items:center;color:#607483;font:11px "IBM Plex Mono",monospace;pointer-events:none;z-index:0}
-    .traffic-map iframe{position:relative;z-index:1}
-    .source-row{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:10px}
-    .source-row span{font-size:10px;color:var(--muted)}
-    .source-link{color:var(--steel);font-weight:700;text-decoration:none;font-size:10px}
-    .intel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .intel{padding:18px}
-    .intel .icon{width:34px;height:34px;border-radius:10px;background:var(--soft);display:grid;place-items:center;color:var(--steel);font-weight:700}
-    .intel h4{margin:13px 0 6px;color:var(--navy);font-size:15px}
-    .intel p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}
-    .sim-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}
-    .sim-control{padding:18px}
-    .control-row{margin-bottom:17px}
-    .control-top{display:flex;justify-content:space-between;gap:10px;font-size:11px;font-weight:700}
-    input[type=range]{width:100%;accent-color:var(--steel)}
-    select, input[type=text]{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px;font:12px "DM Sans",sans-serif;color:var(--ink)}
-    .scenario{padding:18px;background:linear-gradient(135deg,#0f2944,#153d5f);color:#fff;min-height:300px}
-    .scenario h4{margin:0 0 5px;font-size:15px}
-    .scenario p{color:#c9dcea;font-size:11px;line-height:1.55}
-    .gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
-    .gauge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:13px}
-    .gauge .g-label{font:9px "IBM Plex Mono",monospace;color:#aac4d8}
-    .gauge .g-value{font-size:24px;font-weight:700;margin-top:6px}
-    .gbar{height:6px;background:rgba(255,255,255,.1);border-radius:9px;overflow:hidden;margin-top:8px}
-    .gfill{height:100%;background:#69d7c9;border-radius:9px;width:50%}
-    .copilot{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
-    .chat{padding:18px}
-    .messages{height:270px;overflow:auto;background:#f7fafc;border:1px solid var(--line);border-radius:12px;padding:12px}
-    .msg{margin:8px 0;display:flex}
-    .msg.user{justify-content:flex-end}
-    .bubble{max-width:83%;padding:9px 11px;border-radius:12px;font-size:11px;line-height:1.5}
-    .msg.ai .bubble{background:#fff;border:1px solid var(--line)}
-    .msg.user .bubble{background:var(--navy);color:#fff}
-    .chatbar{display:flex;gap:8px;margin-top:10px}
-    .chatbar input{flex:1}
-    .about-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:18px}
-    .profile{padding:20px}
-    .profile-top{display:flex;gap:15px;align-items:center}
-    .profile-avatar{width:74px;height:74px;border-radius:18px;background:linear-gradient(135deg,var(--navy),var(--teal));display:grid;place-items:center;color:#fff;font-size:25px;font-weight:700}
-    .profile h4{margin:0;color:var(--navy);font-size:18px}
-    .profile .role{font-size:11px;color:var(--muted);margin-top:4px}
-    .profile p{font-size:12px;line-height:1.7;color:var(--muted)}
-    .tagset{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-    .tag{padding:5px 7px;border-radius:999px;background:#eef4f8;color:#40627c;font-size:9px;font-family:"IBM Plex Mono",monospace}
-    .brand-card{padding:14px}
-    .brand-card img{width:100%;height:265px;object-fit:cover;border-radius:12px;background:#061624}
-    .data-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .data-source{padding:15px}
-    .data-source strong{display:block;color:var(--navy);font-size:12px}
-    .data-source span{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:5px}
-    footer{padding:28px 0 45px;border-top:1px solid var(--line);color:var(--muted)}
-    footer .foot-grid{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
-    footer small{font-size:9px;line-height:1.6}
-    .notice{padding:10px 12px;background:#fff8eb;border:1px solid #f1dfb3;color:#7b5d1b;border-radius:10px;font-size:10px;line-height:1.5}
-    @media (max-width:1000px){
-      .hero-grid,.grid2,.sim-grid,.copilot,.about-grid{grid-template-columns:1fr}
-      .kpi-grid{grid-template-columns:repeat(2,1fr)}
-      .intel-grid{grid-template-columns:1fr}
-      .data-grid{grid-template-columns:repeat(2,1fr)}
-      .hero-logo{max-width:720px}
+
+    *{
+      box-sizing:border-box;
     }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      margin:0;
+      background:
+        linear-gradient(
+          180deg,
+          #f8fafb 0,
+          #f3f6f8 42%,
+          #eef3f6 100%
+        );
+      color:var(--ink);
+      font-family:"DM Sans",system-ui,sans-serif;
+    }
+
+    a{
+      color:inherit;
+    }
+
+    .mono{
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .container{
+      width:min(1240px,calc(100% - 36px));
+      margin:auto;
+    }
+
+    .topline{
+      height:4px;
+      background:
+        linear-gradient(
+          90deg,
+          var(--navy),
+          var(--steel),
+          var(--teal)
+        );
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(11,32,55,.94);
+      backdrop-filter:blur(14px);
+      color:#fff;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:12px 0;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      min-width:230px;
+    }
+
+    .brandmark{
+      width:38px;
+      height:38px;
+      border-radius:11px;
+      background:
+        linear-gradient(
+          145deg,
+          #183b60,
+          #0c2239
+        );
+      display:grid;
+      place-items:center;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.12);
+    }
+
+    .brandmark svg{
+      width:25px;
+      height:25px;
+    }
+
+    .brand h1{
+      font-size:17px;
+      letter-spacing:.15px;
+      margin:0;
+    }
+
+    .brand small{
+      display:block;
+      font-size:10px;
+      color:#b9cde0;
+      margin-top:2px;
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .navlinks{
+      display:flex;
+      gap:20px;
+      align-items:center;
+    }
+
+    .navlinks a{
+      font-size:13px;
+      color:#d8e7f2;
+      text-decoration:none;
+    }
+
+    .navlinks a:hover{
+      color:white;
+    }
+
+    .livepill{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border:1px solid rgba(126,210,218,.25);
+      border-radius:999px;
+      background:rgba(22,138,150,.12);
+      font-size:11px;
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .pulse{
+      width:7px;
+      height:7px;
+      background:#6de0ce;
+      border-radius:50%;
+      box-shadow:
+        0 0 0 0 rgba(109,224,206,.55);
+      animation:pulse 2s infinite;
+    }
+
+    @keyframes pulse{
+      70%{
+        box-shadow:
+          0 0 0 7px rgba(109,224,206,0);
+      }
+
+      100%{
+        box-shadow:
+          0 0 0 0 rgba(109,224,206,0);
+      }
+    }
+
+    .hero{
+      padding:66px 0 32px;
+      background:
+        radial-gradient(
+          circle at 80% 15%,
+          rgba(79,131,179,.28),
+          transparent 28%
+        ),
+        linear-gradient(
+          135deg,
+          var(--navy),
+          #123451 58%,
+          #1b6170
+        );
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:36px;
+      align-items:center;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      gap:7px;
+      align-items:center;
+      font-size:11px;
+      color:#b8d4ea;
+      font-family:"IBM Plex Mono",monospace;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .eyebrow span{
+      display:inline-block;
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#6de0ce;
+    }
+
+    .hero h2{
+      margin:16px 0 12px;
+      font-size:clamp(36px,5vw,60px);
+      line-height:1.02;
+      color:#fff;
+      letter-spacing:-.03em;
+    }
+
+    .hero p{
+      margin:0;
+      color:#ccdeeb;
+      font-size:17px;
+      line-height:1.65;
+      max-width:680px;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:24px;
+    }
+
+    .btn{
+      border:0;
+      border-radius:11px;
+      padding:11px 15px;
+      font:600 13px "DM Sans",sans-serif;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn-primary{
+      background:#fff;
+      color:var(--navy);
+    }
+
+    .btn-ghost{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.2);
+      color:#fff;
+    }
+
+    .hero-logo{
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.22);
+      background:#051624;
+    }
+
+    .hero-logo img{
+      display:block;
+      width:100%;
+      height:360px;
+      object-fit:cover;
+      object-position:center;
+    }
+
+    .hero-note{
+      font-size:10px;
+      color:#a9c1d3;
+      margin-top:8px;
+      text-align:right;
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .kpis{
+      margin-top:-34px;
+      position:relative;
+      z-index:2;
+    }
+
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .kpi{
+      background:rgba(255,255,255,.95);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:17px 18px;
+      box-shadow:var(--shadow);
+    }
+
+    .kpi .label{
+      font-size:10px;
+      color:var(--muted);
+      font-family:"IBM Plex Mono",monospace;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .kpi .value{
+      font-size:30px;
+      font-weight:700;
+      color:var(--navy);
+      margin-top:6px;
+    }
+
+    .kpi .sub{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:3px;
+    }
+
+    section{
+      padding:54px 0;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:20px;
+    }
+
+    .section-head h3{
+      margin:0;
+      font-size:28px;
+      color:var(--navy);
+      letter-spacing:-.02em;
+    }
+
+    .section-head p{
+      margin:5px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      max-width:760px;
+      line-height:1.6;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1.4fr .8fr;
+      gap:18px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .card-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .card-title{
+      font-weight:700;
+      font-size:14px;
+      color:var(--navy);
+    }
+
+    .card-meta{
+      font-size:10px;
+      color:var(--muted);
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .map-wrap{
+      position:relative;
+    }
+
+    #map{
+      height:570px;
+    }
+
+    .map-toolbar{
+      position:absolute;
+      top:14px;
+      left:14px;
+      z-index:500;
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+    }
+
+    .map-toggle{
+      font:600 11px "IBM Plex Mono",monospace;
+      border:1px solid rgba(10,30,50,.15);
+      background:rgba(255,255,255,.92);
+      padding:7px 9px;
+      border-radius:9px;
+      cursor:pointer;
+      box-shadow:
+        0 6px 20px rgba(10,30,50,.08);
+    }
+
+    .map-toggle.active{
+      background:var(--navy);
+      color:#fff;
+      border-color:var(--navy);
+    }
+
+    .live-status{
+      padding:10px 14px;
+      border-top:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      font-size:11px;
+    }
+
+    .status-ok{
+      color:var(--green);
+      font-weight:700;
+    }
+
+    .status-warn{
+      color:var(--amber);
+      font-weight:700;
+    }
+
+    .side-stack{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .detail{
+      padding:16px;
+    }
+
+    .bridge-name{
+      font-size:19px;
+      font-weight:700;
+      color:var(--navy);
+      line-height:1.22;
+    }
+
+    .bridge-sub{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:15px;
+    }
+
+    .metric{
+      background:#f7fafc;
+      border:1px solid var(--line);
+      border-radius:11px;
+      padding:10px;
+    }
+
+    .metric .m-label{
+      font-size:9px;
+      color:var(--muted);
+      font-family:"IBM Plex Mono",monospace;
+      text-transform:uppercase;
+    }
+
+    .metric .m-val{
+      font-size:14px;
+      font-weight:700;
+      margin-top:5px;
+      color:var(--ink);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:4px 8px;
+      font-size:9px;
+      font-weight:700;
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .badge-gray{
+      background:#edf2f5;
+      color:#536675;
+    }
+
+    .badge-green{
+      background:#e7f4eb;
+      color:#2d7449;
+    }
+
+    .badge-red{
+      background:#f9e9e7;
+      color:#a64236;
+    }
+
+    .detail-actions{
+      display:flex;
+      gap:8px;
+      margin-top:15px;
+      flex-wrap:wrap;
+    }
+
+    .smallbtn{
+      padding:9px 11px;
+      border-radius:9px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:11px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .smallbtn.primary{
+      background:var(--steel);
+      border-color:var(--steel);
+      color:#fff;
+    }
+
+    .feed-list{
+      max-height:280px;
+      overflow:auto;
+    }
+
+    .event{
+      padding:11px 14px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .event:last-child{
+      border-bottom:0;
+    }
+
+    .event-row{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .event-title{
+      font-size:11px;
+      font-weight:700;
+      color:var(--navy);
+    }
+
+    .event-sev{
+      font:700 9px "IBM Plex Mono",monospace;
+    }
+
+    .event-meta{
+      font-size:9.5px;
+      color:var(--muted);
+      margin-top:4px;
+      line-height:1.4;
+    }
+
+    .event-empty{
+      padding:20px 15px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .traffic-card{
+      padding:14px;
+    }
+
+    .traffic-map{
+      height:390px;
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#eef3f5;
+      position:relative;
+    }
+
+    .traffic-map iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      background:#e9eef2;
+      position:relative;
+      z-index:1;
+    }
+
+    .traffic-map:before{
+      content:"Loading official FL511 traffic view...";
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      color:#607483;
+      font:11px "IBM Plex Mono",monospace;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .source-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-top:10px;
+    }
+
+    .source-row span{
+      font-size:10px;
+      color:var(--muted);
+    }
+
+    .source-link{
+      color:var(--steel);
+      font-weight:700;
+      text-decoration:none;
+      font-size:10px;
+    }
+
+    .intel-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+    }
+
+    .intel{
+      padding:18px;
+    }
+
+    .intel .icon{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:var(--soft);
+      display:grid;
+      place-items:center;
+      color:var(--steel);
+      font-weight:700;
+    }
+
+    .intel h4{
+      margin:13px 0 6px;
+      color:var(--navy);
+      font-size:15px;
+    }
+
+    .intel p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    .sim-grid{
+      display:grid;
+      grid-template-columns:.9fr 1.1fr;
+      gap:18px;
+    }
+
+    .sim-control{
+      padding:18px;
+    }
+
+    .control-row{
+      margin-bottom:17px;
+    }
+
+    .control-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    input[type=range]{
+      width:100%;
+      accent-color:var(--steel);
+    }
+
+    select,
+    input[type=text]{
+      width:100%;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      padding:10px;
+      font:12px "DM Sans",sans-serif;
+      color:var(--ink);
+    }
+
+    .scenario{
+      padding:18px;
+      background:
+        linear-gradient(
+          135deg,
+          #0f2944,
+          #153d5f
+        );
+      color:#fff;
+      min-height:300px;
+    }
+
+    .scenario h4{
+      margin:0 0 5px;
+      font-size:15px;
+    }
+
+    .scenario p{
+      color:#c9dcea;
+      font-size:11px;
+      line-height:1.55;
+    }
+
+    .gauges{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .gauge{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:12px;
+      padding:13px;
+    }
+
+    .gauge .g-label{
+      font:9px "IBM Plex Mono",monospace;
+      color:#aac4d8;
+    }
+
+    .gauge .g-value{
+      font-size:24px;
+      font-weight:700;
+      margin-top:6px;
+    }
+
+    .gbar{
+      height:6px;
+      background:rgba(255,255,255,.1);
+      border-radius:9px;
+      overflow:hidden;
+      margin-top:8px;
+    }
+
+    .gfill{
+      height:100%;
+      background:#69d7c9;
+      border-radius:9px;
+      width:50%;
+    }
+
+    .copilot{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:18px;
+    }
+
+    .chat{
+      padding:18px;
+    }
+
+    .messages{
+      height:270px;
+      overflow:auto;
+      background:#f7fafc;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .msg{
+      margin:8px 0;
+      display:flex;
+    }
+
+    .msg.user{
+      justify-content:flex-end;
+    }
+
+    .bubble{
+      max-width:83%;
+      padding:9px 11px;
+      border-radius:12px;
+      font-size:11px;
+      line-height:1.5;
+    }
+
+    .msg.ai .bubble{
+      background:#fff;
+      border:1px solid var(--line);
+    }
+
+    .msg.user .bubble{
+      background:var(--navy);
+      color:#fff;
+    }
+
+    .chatbar{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .chatbar input{
+      flex:1;
+    }
+
+    .about-grid{
+      display:grid;
+      grid-template-columns:.82fr 1.18fr;
+      gap:18px;
+    }
+
+    .profile{
+      padding:20px;
+    }
+
+    .profile-top{
+      display:flex;
+      gap:15px;
+      align-items:center;
+    }
+
+    .profile-avatar{
+      width:74px;
+      height:74px;
+      border-radius:18px;
+      background:
+        linear-gradient(
+          135deg,
+          var(--navy),
+          var(--teal)
+        );
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:25px;
+      font-weight:700;
+    }
+
+    .profile h4{
+      margin:0;
+      color:var(--navy);
+      font-size:18px;
+    }
+
+    .profile .role{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .profile p{
+      font-size:12px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .tagset{
+      display:flex;
+      gap:7px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .tag{
+      padding:5px 7px;
+      border-radius:999px;
+      background:#eef4f8;
+      color:#40627c;
+      font-size:9px;
+      font-family:"IBM Plex Mono",monospace;
+    }
+
+    .brand-card{
+      padding:14px;
+    }
+
+    .brand-card img{
+      width:100%;
+      height:265px;
+      object-fit:cover;
+      border-radius:12px;
+      background:#061624;
+    }
+
+    .data-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+
+    .data-source{
+      padding:15px;
+    }
+
+    .data-source strong{
+      display:block;
+      color:var(--navy);
+      font-size:12px;
+    }
+
+    .data-source span{
+      display:block;
+      color:var(--muted);
+      font-size:10px;
+      line-height:1.5;
+      margin-top:5px;
+    }
+
+    footer{
+      padding:28px 0 45px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+    }
+
+    footer .foot-grid{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:flex-start;
+    }
+
+    footer small{
+      font-size:9px;
+      line-height:1.6;
+    }
+
+    .notice{
+      padding:10px 12px;
+      background:#fff8eb;
+      border:1px solid #f1dfb3;
+      color:#7b5d1b;
+      border-radius:10px;
+      font-size:10px;
+      line-height:1.5;
+    }
+
+    @media (max-width:1000px){
+      .hero-grid,
+      .grid2,
+      .sim-grid,
+      .copilot,
+      .about-grid{
+        grid-template-columns:1fr;
+      }
+
+      .kpi-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .intel-grid{
+        grid-template-columns:1fr;
+      }
+
+      .data-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .hero-logo{
+        max-width:720px;
+      }
+    }
+
     @media (max-width:700px){
-      .container{width:min(100% - 24px,1240px)}
-      .navlinks{display:none}
-      .kpi-grid{grid-template-columns:1fr}
-      .data-grid{grid-template-columns:1fr}
-      .hero{padding-top:45px}
-      .hero-logo img{height:260px}
-      #map{height:460px}
+      .container{
+        width:min(100% - 24px,1240px);
+      }
+
+      .navlinks{
+        display:none;
+      }
+
+      .kpi-grid{
+        grid-template-columns:1fr;
+      }
+
+      .data-grid{
+        grid-template-columns:1fr;
+      }
+
+      .hero{
+        padding-top:45px;
+      }
+
+      .hero-logo img{
+        height:260px;
+      }
+
+      #map{
+        height:460px;
+      }
     }
   </style>
 </head>
+
 <body>
+
   <div class="topline"></div>
+
   <header>
     <div class="container">
       <nav>
+
         <a class="brand" href="#overview" style="text-decoration:none">
+
           <div class="brandmark">
-            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-              <path d="M6 30c7-15 29-18 36 0" stroke="#66d8cb" stroke-width="3.8" stroke-linecap="round"/>
-              <path d="M10 32h28M15 32v7M33 32v7" stroke="#d9eaf5" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="17" cy="18" r="3" fill="#66d8cb"/><circle cx="30" cy="15" r="3" fill="#78b5e8"/>
-              <path d="M17 18l7 5 6-8" stroke="#78b5e8" stroke-width="1.8"/>
+            <svg
+              viewBox="0 0 48 48"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M6 30c7-15 29-18 36 0"
+                stroke="#66d8cb"
+                stroke-width="3.8"
+                stroke-linecap="round"
+              />
+
+              <path
+                d="M10 32h28M15 32v7M33 32v7"
+                stroke="#d9eaf5"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+
+              <circle
+                cx="17"
+                cy="18"
+                r="3"
+                fill="#66d8cb"
+              />
+
+              <circle
+                cx="30"
+                cy="15"
+                r="3"
+                fill="#78b5e8"
+              />
+
+              <path
+                d="M17 18l7 5 6-8"
+                stroke="#78b5e8"
+                stroke-width="1.8"
+              />
             </svg>
           </div>
-          <div><h1>BridgeMind™</h1><small>AI-ASSISTED INFRASTRUCTURE DECISION SUPPORT</small></div>
+
+          <div>
+            <h1>BridgeMind™</h1>
+
+            <small>
+              AI-ASSISTED INFRASTRUCTURE DECISION SUPPORT
+            </small>
+          </div>
+
         </a>
+
         <div class="navlinks">
           <a href="#live">Live Operations</a>
           <a href="#intelligence">Bridge Intelligence</a>
@@ -198,642 +1121,3337 @@
           <a href="#copilot">Copilot</a>
           <a href="#about">About</a>
         </div>
-        <div class="livepill"><span class="pulse"></span><span id="siteLiveState">CONNECTING LIVE FEEDS</span></div>
+
+        <div class="livepill">
+          <span class="pulse"></span>
+          <span id="siteLiveState">CONNECTING LIVE FEEDS</span>
+        </div>
+
       </nav>
     </div>
   </header>
 
+
   <main>
+
     <section class="hero" id="overview">
+
       <div class="container hero-grid">
+
         <div>
-          <div class="eyebrow"><span></span> Miami-Dade County Research Prototype</div>
-          <h2>See the bridge.<br>Understand the network.<br>Act before disruption.</h2>
-          <p>BridgeMind combines bridge inventory intelligence, live roadway operations, flood and hazard context, network consequences, and AI-assisted explanations in one engineering workspace.</p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#live">Open Live Operations</a>
-            <a class="btn btn-ghost" href="https://www.fl511.com/" target="_blank" rel="noopener">Open Official FL511</a>
+
+          <div class="eyebrow">
+            <span></span>
+            Miami-Dade County Research Prototype
           </div>
-          <div style="margin-top:16px;font-size:10px;color:#a9c4d7" class="mono">Research concept: Mostafa Sameer · Ph.D. Candidate · Moss School of Construction · FIU</div>
+
+          <h2>
+            See the bridge.<br>
+            Understand the network.<br>
+            Act before disruption.
+          </h2>
+
+          <p>
+            BridgeMind combines bridge inventory intelligence,
+            live roadway operations, flood and hazard context,
+            network consequences, and AI-assisted explanations
+            in one engineering workspace.
+          </p>
+
+          <div class="hero-actions">
+
+            <a
+              class="btn btn-primary"
+              href="#live"
+            >
+              Open Live Operations
+            </a>
+
+            <a
+              class="btn btn-ghost"
+              href="https://www.fl511.com/"
+              target="_blank"
+              rel="noopener"
+            >
+              Open Official FL511
+            </a>
+
+          </div>
+
+          <div
+            style="margin-top:16px;font-size:10px;color:#a9c4d7"
+            class="mono"
+          >
+            Research concept:
+            Mostafa Sameer · Ph.D. Candidate ·
+            Moss School of Construction · FIU
+          </div>
+
         </div>
+
+
         <div>
-          <div class="hero-logo"><img src="" alt="BridgeMind logo"></div>
-          <div class="hero-note">BridgeMind™ brand concept · research prototype</div>
+
+          <div class="hero-logo">
+
+            <!-- LOGO FROM SAME FOLDER AS INDEX.HTML -->
+            <img
+              src="bridgemind-logo.png"
+              alt="BridgeMind logo"
+            >
+
+          </div>
+
+          <div class="hero-note">
+            BridgeMind™ brand concept · research prototype
+          </div>
+
         </div>
+
       </div>
+
     </section>
 
-    <section class="kpis" style="padding:0 0 18px">
+
+    <section
+      class="kpis"
+      style="padding:0 0 18px"
+    >
+
       <div class="container">
+
         <div class="kpi-grid">
-          <div class="kpi"><div class="label">Research inventory</div><div class="value">644</div><div class="sub">Miami-Dade bridges analyzed in the current prototype</div></div>
-          <div class="kpi"><div class="label">Critical research flags</div><div class="value">18</div><div class="sub">Tier 4 bridges flagged in the research analysis baseline</div></div>
-          <div class="kpi"><div class="label">Live roadway events</div><div id="liveEventCount" class="value">—</div><div class="sub">Public FHP / FL511 operational feed</div></div>
-          <div class="kpi"><div class="label">Active closures</div><div id="liveClosureCount" class="value">—</div><div class="sub">Public closure feed near Miami-Dade</div></div>
+
+          <div class="kpi">
+
+            <div class="label">
+              Research inventory
+            </div>
+
+            <div class="value">
+              644
+            </div>
+
+            <div class="sub">
+              Miami-Dade bridges analyzed in the current prototype
+            </div>
+
+          </div>
+
+
+          <div class="kpi">
+
+            <div class="label">
+              Critical research flags
+            </div>
+
+            <div class="value">
+              18
+            </div>
+
+            <div class="sub">
+              Tier 4 bridges flagged in the research analysis baseline
+            </div>
+
+          </div>
+
+
+          <div class="kpi">
+
+            <div class="label">
+              Live roadway events
+            </div>
+
+            <div
+              id="liveEventCount"
+              class="value"
+            >
+              —
+            </div>
+
+            <div class="sub">
+              Public FHP / FL511 operational feed
+            </div>
+
+          </div>
+
+
+          <div class="kpi">
+
+            <div class="label">
+              Active closures
+            </div>
+
+            <div
+              id="liveClosureCount"
+              class="value"
+            >
+              —
+            </div>
+
+            <div class="sub">
+              Public closure feed near Miami-Dade
+            </div>
+
+          </div>
+
         </div>
+
       </div>
+
     </section>
+
 
     <section id="live">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h3>Live Operations Center</h3>
-            <p>Operational context is refreshed automatically. Bridge geometry comes from the Miami-Dade DTPW GIS bridge layer. Roadway events and congestion points are read from public operational ArcGIS feeds. The official FL511 embedded map provides the current live traffic view.</p>
+
+            <h3>
+              Live Operations Center
+            </h3>
+
+            <p>
+              Operational context is refreshed automatically.
+              Bridge geometry comes from the Miami-Dade DTPW
+              GIS bridge layer. Roadway events and congestion
+              points are read from public operational ArcGIS feeds.
+              The official FL511 embedded map provides the current
+              live traffic view.
+            </p>
+
           </div>
-          <div class="card-meta mono" id="lastRefresh">LAST REFRESH: —</div>
+
+          <div
+            class="card-meta mono"
+            id="lastRefresh"
+          >
+            LAST REFRESH: —
+          </div>
+
         </div>
+
 
         <div class="grid2">
+
           <div class="card">
+
             <div class="card-head">
-              <div class="card-title">Miami-Dade Bridge & Operations Map</div>
-              <div class="card-meta mono">26.0°N · 80.4°W</div>
-            </div>
-            <div class="map-wrap">
-              <div id="map"></div>
-              <div class="map-toolbar">
-                <span class="map-toggle active" style="cursor:default"><span class="pulse" style="display:inline-block;background:#36a98f;margin-right:6px"></span>LIVE MIAMI-DADE</span>
-                <button class="map-toggle active" data-layer="bridges">Bridges</button>
-                <button class="map-toggle active" data-layer="events">Live Events</button>
-                <button class="map-toggle active" data-layer="congestion">Congestion</button>
-                <button class="map-toggle" data-layer="closures">Closures</button>
+
+              <div class="card-title">
+                Miami-Dade Bridge & Operations Map
               </div>
+
+              <div class="card-meta mono">
+                26.0°N · 80.4°W
+              </div>
+
             </div>
+
+
+            <div class="map-wrap">
+
+              <div id="map"></div>
+
+
+              <div class="map-toolbar">
+
+                <span
+                  class="map-toggle active"
+                  style="cursor:default"
+                >
+                  <span
+                    class="pulse"
+                    style="
+                      display:inline-block;
+                      background:#36a98f;
+                      margin-right:6px
+                    "
+                  ></span>
+                  LIVE MIAMI-DADE
+                </span>
+
+
+                <button
+                  class="map-toggle active"
+                  data-layer="bridges"
+                >
+                  Bridges
+                </button>
+
+
+                <button
+                  class="map-toggle active"
+                  data-layer="events"
+                >
+                  Live Events
+                </button>
+
+
+                <button
+                  class="map-toggle active"
+                  data-layer="congestion"
+                >
+                  Congestion
+                </button>
+
+
+                <button
+                  class="map-toggle"
+                  data-layer="closures"
+                >
+                  Closures
+                </button>
+
+              </div>
+
+            </div>
+
+
             <div class="live-status">
-              <div><span class="status-ok">●</span> Live feed status: <span id="feedHealth">loading</span></div>
-              <div class="mono">Auto refresh: 60 sec</div>
+
+              <div>
+
+                <span class="status-ok">
+                  ●
+                </span>
+
+                Live feed status:
+
+                <span id="feedHealth">
+                  loading
+                </span>
+
+              </div>
+
+              <div class="mono">
+                Auto refresh: 60 sec
+              </div>
+
             </div>
+
           </div>
+
 
           <div class="side-stack">
+
+
             <div class="card">
+
               <div class="card-head">
-                <div class="card-title">Selected Bridge</div>
-                <div class="card-meta mono" id="selectedBridgeId">GIS FEATURE</div>
+
+                <div class="card-title">
+                  Selected Bridge
+                </div>
+
+                <div
+                  class="card-meta mono"
+                  id="selectedBridgeId"
+                >
+                  GIS FEATURE
+                </div>
+
               </div>
-              <div class="detail" id="bridgeDetail">
-                <div class="bridge-name">Select a bridge on the map</div>
-                <div class="bridge-sub">Click any bridge segment to attach live operational context.</div>
+
+
+              <div
+                class="detail"
+                id="bridgeDetail"
+              >
+
+                <div class="bridge-name">
+                  Select a bridge on the map
+                </div>
+
+                <div class="bridge-sub">
+                  Click any bridge segment to attach
+                  live operational context.
+                </div>
+
+
                 <div class="detail-grid">
-                  <div class="metric"><div class="m-label">Condition baseline</div><div class="m-val">Research layer</div></div>
-                  <div class="metric"><div class="m-label">Live operations</div><div class="m-val">Waiting for selection</div></div>
-                  <div class="metric"><div class="m-label">Nearby events</div><div class="m-val">—</div></div>
-                  <div class="metric"><div class="m-label">Network role</div><div class="m-val">Can be assessed</div></div>
+
+                  <div class="metric">
+
+                    <div class="m-label">
+                      Condition baseline
+                    </div>
+
+                    <div class="m-val">
+                      Research layer
+                    </div>
+
+                  </div>
+
+
+                  <div class="metric">
+
+                    <div class="m-label">
+                      Live operations
+                    </div>
+
+                    <div class="m-val">
+                      Waiting for selection
+                    </div>
+
+                  </div>
+
+
+                  <div class="metric">
+
+                    <div class="m-label">
+                      Nearby events
+                    </div>
+
+                    <div class="m-val">
+                      —
+                    </div>
+
+                  </div>
+
+
+                  <div class="metric">
+
+                    <div class="m-label">
+                      Network role
+                    </div>
+
+                    <div class="m-val">
+                      Can be assessed
+                    </div>
+
+                  </div>
+
                 </div>
+
+
                 <div class="detail-actions">
-                  <button class="smallbtn primary" onclick="goToSection('simulation')">Run Closure Scenario</button>
-                  <button class="smallbtn" onclick="goToSection('copilot')">Ask BridgeMind</button>
+
+                  <button
+                    class="smallbtn primary"
+                    onclick="goToSection('simulation')"
+                  >
+                    Run Closure Scenario
+                  </button>
+
+                  <button
+                    class="smallbtn"
+                    onclick="goToSection('copilot')"
+                  >
+                    Ask BridgeMind
+                  </button>
+
                 </div>
+
               </div>
+
             </div>
 
-            <div class="card">
-              <div class="card-head">
-                <div class="card-title">Live Operational Feed</div>
-                <div class="card-meta mono" id="eventFeedMeta">MIAMI-DADE</div>
-              </div>
-              <div class="feed-list" id="eventFeed">
-                <div class="event-empty">Loading current public roadway events…</div>
-              </div>
-            </div>
 
             <div class="card">
+
               <div class="card-head">
-                <div class="card-title">Official FL511 Traffic Map</div>
-                <div class="card-meta mono">FDOT · REAL-TIME EMBED</div>
+
+                <div class="card-title">
+                  Live Operational Feed
+                </div>
+
+                <div
+                  class="card-meta mono"
+                  id="eventFeedMeta"
+                >
+                  MIAMI-DADE
+                </div>
+
               </div>
+
+
+              <div
+                class="feed-list"
+                id="eventFeed"
+              >
+
+                <div class="event-empty">
+                  Loading current public roadway events...
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="card">
+
+              <div class="card-head">
+
+                <div class="card-title">
+                  Official FL511 Traffic Map
+                </div>
+
+                <div class="card-meta mono">
+                  FDOT · REAL-TIME EMBED
+                </div>
+
+              </div>
+
+
               <div class="traffic-card">
+
                 <div class="traffic-map">
-                  <iframe id="fl511Frame" title="Florida 511 real-time traffic map" src="https://fl511.com/Map/EmbeddedMap" loading="lazy"></iframe>
+
+                  <iframe
+                    id="fl511Frame"
+                    title="Florida 511 real-time traffic map"
+                    src="https://fl511.com/Map/EmbeddedMap"
+                    loading="lazy"
+                  ></iframe>
+
                 </div>
+
+
                 <div class="source-row">
-                  <span><strong>Official live view:</strong> traffic speeds, closures, incidents, congestion, cameras and more from FL511.</span>
-                  <a class="source-link" href="https://www.fl511.com/" target="_blank" rel="noopener">Open FL511 ↗</a>
+
+                  <span>
+                    <strong>
+                      Official live view:
+                    </strong>
+
+                    traffic speeds, closures,
+                    incidents, congestion, cameras
+                    and more from FL511.
+                  </span>
+
+                  <a
+                    class="source-link"
+                    href="https://www.fl511.com/"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Open FL511 ↗
+                  </a>
+
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
 
     <section id="intelligence">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h3>Bridge Intelligence</h3>
-            <p>BridgeMind separates the structural baseline from live operations. The research layer provides risk context; the operational layer shows what is happening now.</p>
+
+            <h3>
+              Bridge Intelligence
+            </h3>
+
+            <p>
+              BridgeMind separates the structural baseline
+              from live operations. The research layer provides
+              risk context; the operational layer shows what is
+              happening now.
+            </p>
+
           </div>
+
         </div>
+
+
         <div class="intel-grid">
+
+
           <div class="card intel">
-            <div class="icon">01</div>
-            <h4>Structural & Condition Context</h4>
-            <p>Use NBI and inspection attributes such as condition ratings, age, material, span, load posting, and inspection evidence to build a transparent rehabilitation baseline.</p>
+
+            <div class="icon">
+              01
+            </div>
+
+            <h4>
+              Structural & Condition Context
+            </h4>
+
+            <p>
+              Use NBI and inspection attributes such as
+              condition ratings, age, material, span, load
+              posting, and inspection evidence to build a
+              transparent rehabilitation baseline.
+            </p>
+
           </div>
+
+
           <div class="card intel">
-            <div class="icon">02</div>
-            <h4>Network Consequence</h4>
-            <p>Combine traffic importance, alternate routes, connectivity, emergency access, and closure effects so the bridge is evaluated as part of the transportation network.</p>
+
+            <div class="icon">
+              02
+            </div>
+
+            <h4>
+              Network Consequence
+            </h4>
+
+            <p>
+              Combine traffic importance, alternate routes,
+              connectivity, emergency access, and closure
+              effects so the bridge is evaluated as part of
+              the transportation network.
+            </p>
+
           </div>
+
+
           <div class="card intel">
-            <div class="icon">03</div>
-            <h4>Hazard & Community Context</h4>
-            <p>Bring flood and hurricane exposure together with community vulnerability so rehabilitation and recovery scenarios can account for more than asset condition alone.</p>
+
+            <div class="icon">
+              03
+            </div>
+
+            <h4>
+              Hazard & Community Context
+            </h4>
+
+            <p>
+              Bring flood and hurricane exposure together
+              with community vulnerability so rehabilitation
+              and recovery scenarios can account for more
+              than asset condition alone.
+            </p>
+
           </div>
+
         </div>
-        <div class="notice" style="margin-top:14px">
-          <strong>Research baseline:</strong> The prototype uses the Miami-Dade analysis structure developed for BridgeMind, including a 644-bridge research inventory and 18 Tier 4 critical flags. These are <strong>research-layer values</strong>, not live agency status. Detailed RNI values and bridge-level rehabilitation history can be connected through the final validated research dataset.
+
+
+        <div
+          class="notice"
+          style="margin-top:14px"
+        >
+
+          <strong>
+            Research baseline:
+          </strong>
+
+          The prototype uses the Miami-Dade analysis structure
+          developed for BridgeMind, including a 644-bridge research
+          inventory and 18 Tier 4 critical flags.
+
+          These are
+          <strong>research-layer values</strong>,
+          not live agency status.
+
+          Detailed RNI values and bridge-level rehabilitation
+          history can be connected through the final validated
+          research dataset.
+
         </div>
+
       </div>
+
     </section>
+
 
     <section id="simulation">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h3>Disaster & Closure Simulation</h3>
-            <p>Use this as a scenario planning demonstration. Values are generated by the prototype logic and are not forecasts or engineering design outputs.</p>
+
+            <h3>
+              Disaster & Closure Simulation
+            </h3>
+
+            <p>
+              Use this as a scenario planning demonstration.
+              Values are generated by the prototype logic and
+              are not forecasts or engineering design outputs.
+            </p>
+
           </div>
-          <div class="badge badge-gray mono">SCENARIO MODE · SYNTHETIC</div>
+
+          <div class="badge badge-gray mono">
+            SCENARIO MODE · SYNTHETIC
+          </div>
+
         </div>
+
+
         <div class="sim-grid">
+
+
           <div class="card sim-control">
+
             <div class="control-row">
-              <div class="control-top"><span>Storm severity</span><span class="mono" id="stormLabel">Category 3</span></div>
-              <input id="stormRange" type="range" min="1" max="5" value="3">
+
+              <div class="control-top">
+
+                <span>
+                  Storm severity
+                </span>
+
+                <span
+                  class="mono"
+                  id="stormLabel"
+                >
+                  Category 3
+                </span>
+
+              </div>
+
+
+              <input
+                id="stormRange"
+                type="range"
+                min="1"
+                max="5"
+                value="3"
+              >
+
             </div>
+
+
             <div class="control-row">
-              <div class="control-top"><span>Bridge closure</span><span class="mono" id="closureLabel">Selected bridge</span></div>
+
+              <div class="control-top">
+
+                <span>
+                  Bridge closure
+                </span>
+
+                <span class="mono">
+                  Selected bridge
+                </span>
+
+              </div>
+
+
               <select id="closureSelect">
-                <option value="selected">Selected bridge</option>
-                <option value="corridor">High-connectivity corridor</option>
-                <option value="causeway">Barrier-island connection</option>
+
+                <option value="selected">
+                  Selected bridge
+                </option>
+
+                <option value="corridor">
+                  High-connectivity corridor
+                </option>
+
+                <option value="causeway">
+                  Barrier-island connection
+                </option>
+
               </select>
+
             </div>
+
+
             <div class="control-row">
-              <div class="control-top"><span>Community weighting</span><span class="mono" id="sviLabel">SVI aware</span></div>
+
+              <div class="control-top">
+
+                <span>
+                  Community weighting
+                </span>
+
+                <span
+                  class="mono"
+                  id="sviLabel"
+                >
+                  SVI aware
+                </span>
+
+              </div>
+
+
               <select id="sviSelect">
-                <option value="aware">SVI aware</option>
-                <option value="neutral">Neutral</option>
+
+                <option value="aware">
+                  SVI aware
+                </option>
+
+                <option value="neutral">
+                  Neutral
+                </option>
+
               </select>
+
             </div>
-            <button class="smallbtn primary" style="width:100%" onclick="runSimulation()">Simulate disruption</button>
-            <div class="notice" style="margin-top:12px">The simulation panel demonstrates the user experience proposed for BridgeMind. Final network assignment and impact estimates require the validated research model and calibrated data.</div>
+
+
+            <button
+              class="smallbtn primary"
+              style="width:100%"
+              onclick="runSimulation()"
+            >
+              Simulate disruption
+            </button>
+
+
+            <div
+              class="notice"
+              style="margin-top:12px"
+            >
+
+              The simulation panel demonstrates the user
+              experience proposed for BridgeMind.
+
+              Final network assignment and impact estimates
+              require the validated research model and calibrated
+              data.
+
+            </div>
+
           </div>
+
+
           <div class="scenario">
-            <h4 id="scenarioTitle">Bridge closure after a Category 3 event</h4>
-            <p id="scenarioText">BridgeMind is combining the current operational context with a hypothetical closure scenario. The values below are demonstrative outputs for the prototype interface.</p>
+
+            <h4 id="scenarioTitle">
+              Bridge closure after a Category 3 event
+            </h4>
+
+
+            <p id="scenarioText">
+              BridgeMind is combining the current operational
+              context with a hypothetical closure scenario.
+              The values below are demonstrative outputs for
+              the prototype interface.
+            </p>
+
+
             <div class="gauges">
+
+
               <div class="gauge">
-                <div class="g-label">NETWORK DISRUPTION</div>
-                <div class="g-value" id="g1">64%</div>
-                <div class="gbar"><div class="gfill" id="fill1" style="width:64%"></div></div>
+
+                <div class="g-label">
+                  NETWORK DISRUPTION
+                </div>
+
+                <div
+                  class="g-value"
+                  id="g1"
+                >
+                  64%
+                </div>
+
+                <div class="gbar">
+
+                  <div
+                    class="gfill"
+                    id="fill1"
+                    style="width:64%"
+                  ></div>
+
+                </div>
+
               </div>
+
+
               <div class="gauge">
-                <div class="g-label">DET0UR PRESSURE</div>
-                <div class="g-value" id="g2">57%</div>
-                <div class="gbar"><div class="gfill" id="fill2" style="width:57%"></div></div>
+
+                <div class="g-label">
+                  DETOUR PRESSURE
+                </div>
+
+                <div
+                  class="g-value"
+                  id="g2"
+                >
+                  57%
+                </div>
+
+                <div class="gbar">
+
+                  <div
+                    class="gfill"
+                    id="fill2"
+                    style="width:57%"
+                  ></div>
+
+                </div>
+
               </div>
+
+
               <div class="gauge">
-                <div class="g-label">COMMUNITY EXPOSURE</div>
-                <div class="g-value" id="g3">71%</div>
-                <div class="gbar"><div class="gfill" id="fill3" style="width:71%"></div></div>
+
+                <div class="g-label">
+                  COMMUNITY EXPOSURE
+                </div>
+
+                <div
+                  class="g-value"
+                  id="g3"
+                >
+                  71%
+                </div>
+
+                <div class="gbar">
+
+                  <div
+                    class="gfill"
+                    id="fill3"
+                    style="width:71%"
+                  ></div>
+
+                </div>
+
               </div>
+
             </div>
-            <div style="margin-top:18px;font-size:10px;color:#b7cfdf" class="mono" id="simulationNote">NEXT: connect validated bridge network graph + alternate-route assignment</div>
+
+
+            <div
+              style="
+                margin-top:18px;
+                font-size:10px;
+                color:#b7cfdf
+              "
+              class="mono"
+              id="simulationNote"
+            >
+              NEXT:
+              connect validated bridge network graph
+              + alternate-route assignment
+            </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
 
     <section id="copilot">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h3>BridgeMind Copilot</h3>
-            <p>Ask a natural-language engineering question. This front-end prototype generates structured responses using the current live event counts and the selected bridge context. A production version would connect this interface to a retrieval-augmented engineering model and validated network tools.</p>
+
+            <h3>
+              BridgeMind Copilot
+            </h3>
+
+            <p>
+              Ask a natural-language engineering question.
+              This front-end prototype generates structured
+              responses using the current live event counts
+              and selected bridge context.
+
+              A production version would connect this
+              interface to a retrieval-augmented engineering
+              model and validated network tools.
+            </p>
+
           </div>
+
         </div>
+
+
         <div class="copilot">
+
+
           <div class="card chat">
-            <div class="card-head" style="margin:-18px -18px 14px">
-              <div class="card-title">Decision Support Conversation</div>
-              <div class="card-meta mono">LIVE CONTEXT ATTACHED</div>
+
+            <div
+              class="card-head"
+              style="margin:-18px -18px 14px"
+            >
+
+              <div class="card-title">
+                Decision Support Conversation
+              </div>
+
+              <div class="card-meta mono">
+                LIVE CONTEXT ATTACHED
+              </div>
+
             </div>
-            <div class="messages" id="messages">
-              <div class="msg ai"><div class="bubble">BridgeMind is ready. Ask about live congestion, bridge closure context, rehabilitation priorities, or disaster scenarios.</div></div>
+
+
+            <div
+              class="messages"
+              id="messages"
+            >
+
+              <div class="msg ai">
+
+                <div class="bubble">
+                  BridgeMind is ready.
+
+                  Ask about live congestion,
+                  bridge closure context,
+                  rehabilitation priorities,
+                  or disaster scenarios.
+                </div>
+
+              </div>
+
             </div>
+
+
             <div class="chatbar">
-              <input id="chatInput" type="text" placeholder='Example: "What should I investigate if congestion rises near this bridge?"'>
-              <button class="smallbtn primary" onclick="askCopilot()">Ask</button>
+
+              <input
+                id="chatInput"
+                type="text"
+                placeholder='Example: "What should I investigate if congestion rises near this bridge?"'
+              >
+
+              <button
+                class="smallbtn primary"
+                onclick="askCopilot()"
+              >
+                Ask
+              </button>
+
             </div>
+
           </div>
-          <div class="card" style="padding:18px">
-            <div class="card-title" style="margin-bottom:10px">Suggested prompts</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <button class="smallbtn" onclick="usePrompt('Summarize the current operational risk around the selected bridge.')">Summarize current operational risk</button>
-              <button class="smallbtn" onclick="usePrompt('What happens if this bridge closes after a major storm?')">Test a storm closure</button>
-              <button class="smallbtn" onclick="usePrompt('What data do I need before recommending rehabilitation?')">Identify missing engineering data</button>
-              <button class="smallbtn" onclick="usePrompt('Explain why network connectivity matters for bridge prioritization.')">Explain network consequence</button>
+
+
+          <div
+            class="card"
+            style="padding:18px"
+          >
+
+            <div
+              class="card-title"
+              style="margin-bottom:10px"
+            >
+              Suggested prompts
             </div>
-            <div class="notice" style="margin-top:14px">Production pathway: retrieval-augmented engineering guidance + validated predictive models + network simulation + auditable decision logs.</div>
+
+
+            <div
+              style="
+                display:flex;
+                flex-direction:column;
+                gap:8px
+              "
+            >
+
+              <button
+                class="smallbtn"
+                onclick="usePrompt('Summarize the current operational risk around the selected bridge.')"
+              >
+                Summarize current operational risk
+              </button>
+
+
+              <button
+                class="smallbtn"
+                onclick="usePrompt('What happens if this bridge closes after a major storm?')"
+              >
+                Test a storm closure
+              </button>
+
+
+              <button
+                class="smallbtn"
+                onclick="usePrompt('What data do I need before recommending rehabilitation?')"
+              >
+                Identify missing engineering data
+              </button>
+
+
+              <button
+                class="smallbtn"
+                onclick="usePrompt('Explain why network connectivity matters for bridge prioritization.')"
+              >
+                Explain network consequence
+              </button>
+
+            </div>
+
+
+            <div
+              class="notice"
+              style="margin-top:14px"
+            >
+
+              Production pathway:
+
+              retrieval-augmented engineering guidance
+              + validated predictive models
+              + network simulation
+              + auditable decision logs.
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
 
     <section id="about">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h3>About the Researcher & Concept</h3>
-            <p>BridgeMind is presented as a research prototype built around a bridge rehabilitation and disaster-recovery research program.</p>
+
+            <h3>
+              About the Researcher & Concept
+            </h3>
+
+            <p>
+              BridgeMind is presented as a research prototype
+              built around a bridge rehabilitation and
+              disaster-recovery research program.
+            </p>
+
           </div>
+
         </div>
+
+
         <div class="about-grid">
+
+
           <div class="card profile">
+
             <div class="profile-top">
-              <div class="profile-avatar">MS</div>
-              <div>
-                <h4>Mostafa Sameer</h4>
-                <div class="role">Ph.D. Candidate · Moss School of Construction · Florida International University</div>
+
+              <div class="profile-avatar">
+                MS
               </div>
+
+              <div>
+
+                <h4>
+                  Mostafa Sameer
+                </h4>
+
+                <div class="role">
+                  Ph.D. Candidate · Moss School of Construction ·
+                  Florida International University
+                </div>
+
+              </div>
+
             </div>
-            <p style="margin-top:17px">Research interests represented in this concept include bridge rehabilitation prioritization, transportation network resilience, flood and disaster analysis, digital twins, data-driven risk assessment, and explainable AI for infrastructure management.</p>
+
+
+            <p style="margin-top:17px">
+
+              Research interests represented in this concept
+              include bridge rehabilitation prioritization,
+              transportation network resilience, flood and
+              disaster analysis, digital twins, data-driven
+              risk assessment, and explainable AI for
+              infrastructure management.
+
+            </p>
+
+
             <div class="tagset">
-              <span class="tag">BRIDGE RNI</span>
-              <span class="tag">NETWORK RESILIENCE</span>
-              <span class="tag">FLOOD RISK</span>
-              <span class="tag">DIGITAL TWIN</span>
-              <span class="tag">GENERATIVE AI</span>
-              <span class="tag">GIS</span>
-              <span class="tag">PYTHON</span>
+
+              <span class="tag">
+                BRIDGE RNI
+              </span>
+
+              <span class="tag">
+                NETWORK RESILIENCE
+              </span>
+
+              <span class="tag">
+                FLOOD RISK
+              </span>
+
+              <span class="tag">
+                DIGITAL TWIN
+              </span>
+
+              <span class="tag">
+                GENERATIVE AI
+              </span>
+
+              <span class="tag">
+                GIS
+              </span>
+
+              <span class="tag">
+                PYTHON
+              </span>
+
             </div>
+
           </div>
-          <div class="card brand-card">
-<img src="/bridgemind/bridgemind-logo.png" alt="BridgeMind brand identity">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-              <div><strong style="color:var(--navy)">BridgeMind™</strong><div style="font-size:10px;color:var(--muted)">AI for safer, stronger, more resilient communities</div></div>
-              <div class="badge badge-gray mono">RESEARCH BRAND</div>
+
+
+          <div
+            class="card brand-card"
+          >
+
+            <!-- LOGO FROM SAME FOLDER AS INDEX.HTML -->
+            <img
+              src="bridgemind-logo.png"
+              alt="BridgeMind brand identity"
+            >
+
+
+            <div
+              style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-top:10px
+              "
+            >
+
+              <div>
+
+                <strong
+                  style="color:var(--navy)"
+                >
+                  BridgeMind™
+                </strong>
+
+                <div
+                  style="
+                    font-size:10px;
+                    color:var(--muted)
+                  "
+                >
+                  AI for safer, stronger,
+                  more resilient communities
+                </div>
+
+              </div>
+
+
+              <div class="badge badge-gray mono">
+                RESEARCH BRAND
+              </div>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
 
     <section id="sources">
+
       <div class="container">
+
         <div class="section-head">
+
           <div>
-            <h3>Data & Provenance</h3>
-            <p>The website separates live operational feeds from research and inventory baselines so users can see which information is current and which information comes from the research dataset.</p>
+
+            <h3>
+              Data & Provenance
+            </h3>
+
+            <p>
+              The website separates live operational feeds
+              from research and inventory baselines so users
+              can see which information is current and which
+              information comes from the research dataset.
+            </p>
+
           </div>
+
         </div>
+
+
         <div class="data-grid">
-          <div class="card data-source"><strong>Florida 511 / FDOT</strong><span>Official Florida source for real-time traffic, incidents, congestion, closures, cameras, and travel information.</span><a class="source-link" href="https://www.fl511.com/" target="_blank" rel="noopener">fl511.com ↗</a></div>
-          <div class="card data-source"><strong>Miami-Dade DTPW GIS</strong><span>Agency bridge layer used to display bridge geometries maintained by Miami-Dade Department of Transportation and Public Works.</span><a class="source-link" href="https://gisweb.miamidade.gov/arcgis/rest/services/EAMS/EAMS_Map/MapServer/1" target="_blank" rel="noopener">Bridge GIS layer ↗</a></div>
-          <div class="card data-source"><strong>FHP / FL511 ArcGIS feed</strong><span>Public operational point layers used by this prototype for current roadway closures and congestion context.</span><a class="source-link" href="https://services.arcgis.com/3wFbqsFPLeKqOlIK/ArcGIS/rest/services/Road_Closures/FeatureServer/layers" target="_blank" rel="noopener">Operational layers ↗</a></div>
-          <div class="card data-source"><strong>NBI / Research Baseline</strong><span>Structural inventory and condition variables can be connected from NBI and the BridgeMind research dataset for validated rehabilitation scoring.</span><a class="source-link" href="https://www.arcgis.com/home/item.html?id=3a9e9ea9b8cf4e36bc184027230b87af&sublayer=0" target="_blank" rel="noopener">NBI reference ↗</a></div>
+
+
+          <div class="card data-source">
+
+            <strong>
+              Florida 511 / FDOT
+            </strong>
+
+            <span>
+              Official Florida source for real-time traffic,
+              incidents, congestion, closures, cameras,
+              and travel information.
+            </span>
+
+            <a
+              class="source-link"
+              href="https://www.fl511.com/"
+              target="_blank"
+              rel="noopener"
+            >
+              fl511.com ↗
+            </a>
+
+          </div>
+
+
+          <div class="card data-source">
+
+            <strong>
+              Miami-Dade DTPW GIS
+            </strong>
+
+            <span>
+              Agency bridge layer used to display bridge
+              geometries maintained by Miami-Dade Department
+              of Transportation and Public Works.
+            </span>
+
+            <a
+              class="source-link"
+              href="https://gisweb.miamidade.gov/arcgis/rest/services/EAMS/EAMS_Map/MapServer/1"
+              target="_blank"
+              rel="noopener"
+            >
+              Bridge GIS layer ↗
+            </a>
+
+          </div>
+
+
+          <div class="card data-source">
+
+            <strong>
+              FHP / FL511 ArcGIS feed
+            </strong>
+
+            <span>
+              Public operational point layers used by this
+              prototype for current roadway closures and
+              congestion context.
+            </span>
+
+            <a
+              class="source-link"
+              href="https://services.arcgis.com/3wFbqsFPLeKqOlIK/ArcGIS/rest/services/Road_Closures/FeatureServer/layers"
+              target="_blank"
+              rel="noopener"
+            >
+              Operational layers ↗
+            </a>
+
+          </div>
+
+
+          <div class="card data-source">
+
+            <strong>
+              NBI / Research Baseline
+            </strong>
+
+            <span>
+              Structural inventory and condition variables
+              can be connected from NBI and the BridgeMind
+              research dataset for validated rehabilitation scoring.
+            </span>
+
+            <a
+              class="source-link"
+              href="https://www.arcgis.com/home/item.html?id=3a9e9ea9b8cf4e36bc184027230b87af&sublayer=0"
+              target="_blank"
+              rel="noopener"
+            >
+              NBI reference ↗
+            </a>
+
+          </div>
+
         </div>
-        <div class="notice" style="margin-top:14px">
-          <strong>Important:</strong> Live operational data is provided by external public services and may be unavailable, delayed, or changed by the source agency. The disaster simulation numbers shown on this prototype are illustrative, not forecasts. BridgeMind is a research decision-support concept and does not replace inspection, design, emergency management, or engineering judgment.
+
+
+        <div
+          class="notice"
+          style="margin-top:14px"
+        >
+
+          <strong>
+            Important:
+          </strong>
+
+          Live operational data is provided by external public
+          services and may be unavailable, delayed, or changed
+          by the source agency.
+
+          The disaster simulation numbers shown on this prototype
+          are illustrative, not forecasts.
+
+          BridgeMind is a research decision-support concept and
+          does not replace inspection, design, emergency management,
+          or engineering judgment.
+
         </div>
+
       </div>
+
     </section>
+
   </main>
 
+
   <footer>
+
     <div class="container">
+
       <div class="foot-grid">
-        <small>BridgeMind™ · AI-Assisted Bridge Rehabilitation & Disaster Recovery<br>Research prototype by Mostafa Sameer · FIU</small>
-        <small class="mono">LIVE OPS REFRESH: 60s · BUILD: 2026.09</small>
+
+        <small>
+
+          BridgeMind™ · AI-Assisted Bridge Rehabilitation
+          & Disaster Recovery
+
+          <br>
+
+          Research prototype by
+          Mostafa Sameer · FIU
+
+        </small>
+
+
+        <small class="mono">
+
+          LIVE OPS REFRESH: 60s · BUILD: 2026.09
+
+        </small>
+
       </div>
+
     </div>
+
   </footer>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="https://unpkg.com/esri-leaflet@3.0.16/dist/esri-leaflet.js" crossorigin=""></script>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+
+
+  <script
+    src="https://unpkg.com/esri-leaflet@3.0.16/dist/esri-leaflet.js"
+    crossorigin=""
+  ></script>
+
+
   <script>
-    const BRIDGE_LAYER_URL = "https://gisweb.miamidade.gov/arcgis/rest/services/EAMS/EAMS_Map/MapServer/1"; // Miami-Dade DTPW maintained bridge layer
-    const CLOSURE_URL = "https://services.arcgis.com/3wFbqsFPLeKqOlIK/ArcGIS/rest/services/Road_Closures/FeatureServer/0/query";
-    const CONGESTION_URL = "https://services.arcgis.com/3wFbqsFPLeKqOlIK/ArcGIS/rest/services/Road_Closures/FeatureServer/5/query";
-    const COUNTY_WHERE = "COUNTY='MIAMI-DADE'";
-    const refreshMs = 60000;
-    let map, bridgeLayer, congestionLayerGroup, closureLayerGroup, eventLayerGroup;
-    let events = [], closures = [], selectedBridge = null;
-    let bridgeVisible = true, eventVisible = true, congestionVisible = true, closureVisible = false;
+
+    const BRIDGE_LAYER_URL =
+      "https://gisweb.miamidade.gov/arcgis/rest/services/EAMS/EAMS_Map/MapServer/1";
+
+    const CLOSURE_URL =
+      "https://services.arcgis.com/3wFbqsFPLeKqOlIK/ArcGIS/rest/services/Road_Closures/FeatureServer/0/query";
+
+    const CONGESTION_URL =
+      "https://services.arcgis.com/3wFbqsFPLeKqOlIK/ArcGIS/rest/services/Road_Closures/FeatureServer/5/query";
+
+    const COUNTY_WHERE =
+      "COUNTY='MIAMI-DADE'";
+
+    const refreshMs =
+      60000;
+
+
+    let map;
+    let bridgeLayer;
+    let congestionLayerGroup;
+    let closureLayerGroup;
+    let eventLayerGroup;
+
+    let events = [];
+    let closures = [];
+
+    let selectedBridge = null;
+
+    let bridgeVisible = true;
+    let eventVisible = true;
+    let congestionVisible = true;
+    let closureVisible = false;
+
 
     function fmtTime(x){
-      if(!x) return "—";
-      const d = new Date(x);
-      if(Number.isNaN(d.getTime())) return String(x);
-      return d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"});
+
+      if(!x){
+        return "—";
+      }
+
+      const d =
+        new Date(x);
+
+      if(Number.isNaN(d.getTime())){
+        return String(x);
+      }
+
+      return d.toLocaleTimeString(
+        [],
+        {
+          hour:"numeric",
+          minute:"2-digit",
+          second:"2-digit"
+        }
+      );
+
     }
+
 
     function feedFreshness(values){
-      const dates = values.map(v => new Date(v)).filter(d => !Number.isNaN(d.getTime()));
-      if(!dates.length) return {label:"no timestamp", stale:true};
-      const latest = new Date(Math.max(...dates.map(d=>d.getTime())));
-      const ageHrs = (Date.now()-latest.getTime())/3600000;
-      return {label: latest.toLocaleString([], {dateStyle:"short",timeStyle:"short"}), stale: ageHrs > 6};
+
+      const dates =
+        values
+          .map(
+            v => new Date(v)
+          )
+          .filter(
+            d => !Number.isNaN(d.getTime())
+          );
+
+      if(!dates.length){
+
+        return {
+          label:"no timestamp",
+          stale:true
+        };
+
+      }
+
+      const latest =
+        new Date(
+          Math.max(
+            ...dates.map(
+              d => d.getTime()
+            )
+          )
+        );
+
+      const ageHrs =
+        (
+          Date.now() -
+          latest.getTime()
+        ) / 3600000;
+
+      return {
+        label:
+          latest.toLocaleString(
+            [],
+            {
+              dateStyle:"short",
+              timeStyle:"short"
+            }
+          ),
+        stale:
+          ageHrs > 6
+      };
+
     }
+
 
     function severityClass(s){
-      const t = String(s||"").toLowerCase();
-      return t.includes("high") || t.includes("major") ? "badge-red" : t.includes("medium") ? "badge-gray" : "badge-green";
+
+      const t =
+        String(s || "")
+          .toLowerCase();
+
+      return
+        t.includes("high") ||
+        t.includes("major")
+          ? "badge-red"
+          : t.includes("medium")
+            ? "badge-gray"
+            : "badge-green";
+
     }
+
 
     function setLiveState(ok){
-      document.getElementById("siteLiveState").textContent = ok ? "LIVE FEEDS CONNECTED" : "LIVE FEEDS DEGRADED";
-      document.getElementById("feedHealth").textContent = ok ? "connected" : "degraded";
-      document.getElementById("feedHealth").className = ok ? "status-ok" : "status-warn";
+
+      document.getElementById(
+        "siteLiveState"
+      ).textContent =
+        ok
+          ? "LIVE FEEDS CONNECTED"
+          : "LIVE FEEDS DEGRADED";
+
+      document.getElementById(
+        "feedHealth"
+      ).textContent =
+        ok
+          ? "connected"
+          : "degraded";
+
+      document.getElementById(
+        "feedHealth"
+      ).className =
+        ok
+          ? "status-ok"
+          : "status-warn";
+
     }
 
-    async function arcgisQuery(url, params){
-      const u = new URL(url);
-      Object.entries(params).forEach(([k,v]) => u.searchParams.set(k,v));
-      const res = await fetch(u.toString(), {cache:"no-store"});
-      if(!res.ok) throw new Error("Feed request failed: " + res.status);
+
+    async function arcgisQuery(
+      url,
+      params
+    ){
+
+      const u =
+        new URL(url);
+
+      Object.entries(params)
+        .forEach(
+          ([k,v]) =>
+            u.searchParams.set(k,v)
+        );
+
+      const res =
+        await fetch(
+          u.toString(),
+          {
+            cache:"no-store"
+          }
+        );
+
+      if(!res.ok){
+
+        throw new Error(
+          "Feed request failed: " +
+          res.status
+        );
+
+      }
+
       return res.json();
+
     }
+
 
     function clearLayerGroup(g){
-      if(g) g.clearLayers();
+
+      if(g){
+        g.clearLayers();
+      }
+
     }
+
 
     function addEventMarkers(){
-      clearLayerGroup(eventLayerGroup);
-      eventLayerGroup = L.layerGroup();
-      const use = [...events, ...closures];
-      use.forEach(e=>{
-        if(e.LATITUDE == null || e.LONGITUDE == null) return;
-        const lat = Number(e.LATITUDE), lon = Number(e.LONGITUDE);
-        if(!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-        const marker = L.circleMarker([lat,lon],{
-          radius:5, weight:1.2, color:"#ffffff",
-          fillColor: String(e.__kind)==="closure" ? "#c24c3d" : "#d9922e",
-          fillOpacity:.9
-        });
-        marker.bindPopup(`
-          <div style="font:12px Arial;min-width:220px">
-            <strong>${esc(e.NAME || e.LOCATION || "Roadway event")}</strong><br>
-            <span>${esc(e.TYPE || e.TYPEEVENT || "Event")}</span><br>
-            <span>${esc(e.HIGHWAY || "")} ${esc(e.DIRECTION || "")}</span><br>
-            <span style="color:#5f7180">${esc(e.DESCRIPT || e.REMARKS || "")}</span><br>
-            <small>Updated: ${esc(e.UPDATED || e.TIMESTAMP || e.TIMESTR || "—")}</small>
-          </div>
-        `);
-        marker.addTo(eventLayerGroup);
-      });
+
+      clearLayerGroup(
+        eventLayerGroup
+      );
+
+      eventLayerGroup =
+        L.layerGroup();
+
+      const use =
+        [
+          ...events,
+          ...closures
+        ];
+
+      use.forEach(
+        e => {
+
+          if(
+            e.LATITUDE == null ||
+            e.LONGITUDE == null
+          ){
+
+            return;
+
+          }
+
+          const lat =
+            Number(e.LATITUDE);
+
+          const lon =
+            Number(e.LONGITUDE);
+
+          if(
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lon)
+          ){
+
+            return;
+
+          }
+
+          const marker =
+            L.circleMarker(
+              [lat,lon],
+              {
+                radius:5,
+                weight:1.2,
+                color:"#ffffff",
+                fillColor:
+                  String(e.__kind) === "closure"
+                    ? "#c24c3d"
+                    : "#d9922e",
+                fillOpacity:.9
+              }
+            );
+
+          marker.bindPopup(`
+            <div
+              style="
+                font:12px Arial;
+                min-width:220px
+              "
+            >
+
+              <strong>
+                ${esc(
+                  e.NAME ||
+                  e.LOCATION ||
+                  "Roadway event"
+                )}
+              </strong>
+
+              <br>
+
+              <span>
+                ${esc(
+                  e.TYPE ||
+                  e.TYPEEVENT ||
+                  "Event"
+                )}
+              </span>
+
+              <br>
+
+              <span>
+                ${esc(
+                  e.HIGHWAY ||
+                  ""
+                )}
+                ${esc(
+                  e.DIRECTION ||
+                  ""
+                )}
+              </span>
+
+              <br>
+
+              <span
+                style="
+                  color:#5f7180
+                "
+              >
+                ${esc(
+                  e.DESCRIPT ||
+                  e.REMARKS ||
+                  ""
+                )}
+              </span>
+
+              <br>
+
+              <small>
+                Updated:
+                ${esc(
+                  e.UPDATED ||
+                  e.TIMESTAMP ||
+                  e.TIMESTR ||
+                  "—"
+                )}
+              </small>
+
+            </div>
+          `);
+
+          marker.addTo(
+            eventLayerGroup
+          );
+
+        }
+      );
+
       applyMapLayers();
+
     }
+
 
     function renderFeed(){
-      const all = [...events.map(x=>({...x,__kind:"event"})), ...closures.map(x=>({...x,__kind:"closure"}))]
-        .sort((a,b)=>String(b.UPDATED||b.TIMESTAMP||"").localeCompare(String(a.UPDATED||a.TIMESTAMP||"")))
+
+      const all =
+        [
+          ...events.map(
+            x => ({
+              ...x,
+              __kind:"event"
+            })
+          ),
+
+          ...closures.map(
+            x => ({
+              ...x,
+              __kind:"closure"
+            })
+          )
+        ]
+        .sort(
+          (a,b) =>
+            String(
+              b.UPDATED ||
+              b.TIMESTAMP ||
+              ""
+            )
+            .localeCompare(
+              String(
+                a.UPDATED ||
+                a.TIMESTAMP ||
+                ""
+              )
+            )
+        )
         .slice(0,18);
-      const el = document.getElementById("eventFeed");
+
+
+      const el =
+        document.getElementById(
+          "eventFeed"
+        );
+
+
       if(!all.length){
-        el.innerHTML = '<div class="event-empty">No Miami-Dade roadway events were returned by the public operational feed at the latest refresh.</div>';
+
+        el.innerHTML =
+          `
+            <div class="event-empty">
+              No Miami-Dade roadway events were returned
+              by the public operational feed at the latest refresh.
+            </div>
+          `;
+
         return;
+
       }
-      el.innerHTML = all.map(e=>{
-        const sev = e.SEVERITY || e.URGENCY || (e.__kind==="closure" ? "Closure" : "Event");
-        const ts = e.UPDATED || e.TIMESTAMP || e.TIMESTR || "";
-        return `<div class="event">
-          <div class="event-row">
-            <div class="event-title">${esc(e.NAME || e.LOCATION || e.HIGHWAY || "Roadway event")}</div>
-            <div class="event-sev"><span class="badge ${e.__kind==="closure"?"badge-red":severityClass(sev)}">${esc(sev)}</span></div>
-          </div>
-          <div class="event-meta">${esc(e.HIGHWAY||"")} ${esc(e.DIRECTION||"")} · ${esc(e.TYPE||e.TYPEEVENT||"Operational event")} · Source timestamp ${esc(ts||"not supplied")}</div>
-        </div>`;
-      }).join("");
+
+
+      el.innerHTML =
+        all
+          .map(
+            e => {
+
+              const sev =
+                e.SEVERITY ||
+                e.URGENCY ||
+                (
+                  e.__kind === "closure"
+                    ? "Closure"
+                    : "Event"
+                );
+
+              const ts =
+                e.UPDATED ||
+                e.TIMESTAMP ||
+                e.TIMESTR ||
+                "";
+
+              return `
+                <div class="event">
+
+                  <div class="event-row">
+
+                    <div class="event-title">
+                      ${esc(
+                        e.NAME ||
+                        e.LOCATION ||
+                        e.HIGHWAY ||
+                        "Roadway event"
+                      )}
+                    </div>
+
+                    <div class="event-sev">
+
+                      <span
+                        class="badge ${
+                          e.__kind === "closure"
+                            ? "badge-red"
+                            : severityClass(sev)
+                        }"
+                      >
+                        ${esc(sev)}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="event-meta">
+
+                    ${esc(
+                      e.HIGHWAY ||
+                      ""
+                    )}
+
+                    ${esc(
+                      e.DIRECTION ||
+                      ""
+                    )}
+
+                    ·
+
+                    ${esc(
+                      e.TYPE ||
+                      e.TYPEEVENT ||
+                      "Operational event"
+                    )}
+
+                    ·
+
+                    Source timestamp
+
+                    ${esc(
+                      ts ||
+                      "not supplied"
+                    )}
+
+                  </div>
+
+                </div>
+              `;
+
+            }
+          )
+          .join("");
+
     }
+
 
     function bridgeClick(e){
-      selectedBridge = e.layer;
-      const p = e.layer.feature?.properties || {};
-      const bounds = e.layer.getBounds();
-      const center = bounds.getCenter();
-      const nearby = eventsNear(center.lat, center.lng, 0.8);
-      const name = p.STREETNAME || p.FACILITY || p.NAME || "Miami-Dade bridge";
-      document.getElementById("selectedBridgeId").textContent = p.OBJECTID ? "OBJECT " + p.OBJECTID : "GIS FEATURE";
-      document.getElementById("bridgeDetail").innerHTML = `
-        <div class="bridge-name">${esc(name)}</div>
-        <div class="bridge-sub">Miami-Dade DTPW GIS bridge geometry · selected at ${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}</div>
-        <div class="detail-grid">
-          <div class="metric"><div class="m-label">Live operations</div><div class="m-val">${nearby.length ? "Attention" : "No nearby event returned"}</div></div>
-          <div class="metric"><div class="m-label">Nearby events</div><div class="m-val">${nearby.length}</div></div>
-          <div class="metric"><div class="m-label">Structural baseline</div><div class="m-val">Attach NBI / RNI</div></div>
-          <div class="metric"><div class="m-label">Network assessment</div><div class="m-val">Ready for simulation</div></div>
+
+      selectedBridge =
+        e.layer;
+
+      const p =
+        e.layer.feature?.properties ||
+        {};
+
+      const bounds =
+        e.layer.getBounds();
+
+      const center =
+        bounds.getCenter();
+
+      const nearby =
+        eventsNear(
+          center.lat,
+          center.lng,
+          0.8
+        );
+
+
+      const name =
+        p.STREETNAME ||
+        p.FACILITY ||
+        p.NAME ||
+        "Miami-Dade bridge";
+
+
+      document.getElementById(
+        "selectedBridgeId"
+      ).textContent =
+        p.OBJECTID
+          ? "OBJECT " + p.OBJECTID
+          : "GIS FEATURE";
+
+
+      document.getElementById(
+        "bridgeDetail"
+      ).innerHTML = `
+
+        <div class="bridge-name">
+          ${esc(name)}
         </div>
+
+        <div class="bridge-sub">
+          Miami-Dade DTPW GIS bridge geometry ·
+          selected at
+          ${center.lat.toFixed(5)},
+          ${center.lng.toFixed(5)}
+        </div>
+
+
+        <div class="detail-grid">
+
+          <div class="metric">
+
+            <div class="m-label">
+              Live operations
+            </div>
+
+            <div class="m-val">
+              ${
+                nearby.length
+                  ? "Attention"
+                  : "No nearby event returned"
+              }
+            </div>
+
+          </div>
+
+
+          <div class="metric">
+
+            <div class="m-label">
+              Nearby events
+            </div>
+
+            <div class="m-val">
+              ${nearby.length}
+            </div>
+
+          </div>
+
+
+          <div class="metric">
+
+            <div class="m-label">
+              Structural baseline
+            </div>
+
+            <div class="m-val">
+              Attach NBI / RNI
+            </div>
+
+          </div>
+
+
+          <div class="metric">
+
+            <div class="m-label">
+              Network assessment
+            </div>
+
+            <div class="m-val">
+              Ready for simulation
+            </div>
+
+          </div>
+
+        </div>
+
+
         <div class="detail-actions">
-          <button class="smallbtn primary" onclick="goToSection('simulation')">Run Closure Scenario</button>
-          <button class="smallbtn" onclick="goToSection('copilot')">Ask BridgeMind</button>
-        </div>`;
-      map.fitBounds(bounds.pad(1.1), {maxZoom:15});
-      usePrompt("Summarize the current operational risk around the selected bridge.");
+
+          <button
+            class="smallbtn primary"
+            onclick="goToSection('simulation')"
+          >
+            Run Closure Scenario
+          </button>
+
+
+          <button
+            class="smallbtn"
+            onclick="goToSection('copilot')"
+          >
+            Ask BridgeMind
+          </button>
+
+        </div>
+      `;
+
+
+      map.fitBounds(
+        bounds.pad(1.1),
+        {
+          maxZoom:15
+        }
+      );
+
+
+      usePrompt(
+        "Summarize the current operational risk around the selected bridge."
+      );
+
     }
 
-    function eventsNear(lat,lon,km){
-      const out=[];
-      [...events,...closures].forEach(e=>{
-        const a=Number(e.LATITUDE), b=Number(e.LONGITUDE);
-        if(!Number.isFinite(a)||!Number.isFinite(b)) return;
-        const d=haversine(lat,lon,a,b);
-        if(d<=km) out.push(e);
-      });
+
+    function eventsNear(
+      lat,
+      lon,
+      km
+    ){
+
+      const out = [];
+
+
+      [
+        ...events,
+        ...closures
+      ]
+      .forEach(
+        e => {
+
+          const a =
+            Number(
+              e.LATITUDE
+            );
+
+          const b =
+            Number(
+              e.LONGITUDE
+            );
+
+
+          if(
+            !Number.isFinite(a) ||
+            !Number.isFinite(b)
+          ){
+
+            return;
+
+          }
+
+
+          const d =
+            haversine(
+              lat,
+              lon,
+              a,
+              b
+            );
+
+
+          if(d <= km){
+
+            out.push(e);
+
+          }
+
+        }
+      );
+
+
       return out;
+
     }
 
-    function haversine(lat1,lon1,lat2,lon2){
-      const R=6371;
-      const toRad=x=>x*Math.PI/180;
-      const dLat=toRad(lat2-lat1),dLon=toRad(lon2-lon1);
-      const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-      return 2*R*Math.asin(Math.sqrt(a));
+
+    function haversine(
+      lat1,
+      lon1,
+      lat2,
+      lon2
+    ){
+
+      const R =
+        6371;
+
+      const toRad =
+        x =>
+          x * Math.PI / 180;
+
+      const dLat =
+        toRad(
+          lat2 - lat1
+        );
+
+      const dLon =
+        toRad(
+          lon2 - lon1
+        );
+
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(
+          toRad(lat1)
+        ) *
+        Math.cos(
+          toRad(lat2)
+        ) *
+        Math.sin(dLon / 2) ** 2;
+
+      return
+        2 *
+        R *
+        Math.asin(
+          Math.sqrt(a)
+        );
+
     }
+
 
     function applyMapLayers(){
-      if(bridgeVisible && bridgeLayer && !map.hasLayer(bridgeLayer)) bridgeLayer.addTo(map);
-      if(!bridgeVisible && bridgeLayer && map.hasLayer(bridgeLayer)) map.removeLayer(bridgeLayer);
-      if(eventVisible && eventLayerGroup && !map.hasLayer(eventLayerGroup)) eventLayerGroup.addTo(map);
-      if(!eventVisible && eventLayerGroup && map.hasLayer(eventLayerGroup)) map.removeLayer(eventLayerGroup);
-      if(congestionVisible && congestionLayerGroup && !map.hasLayer(congestionLayerGroup)) congestionLayerGroup.addTo(map);
-      if(!congestionVisible && congestionLayerGroup && map.hasLayer(congestionLayerGroup)) map.removeLayer(congestionLayerGroup);
-      if(closureVisible && closureLayerGroup && !map.hasLayer(closureLayerGroup)) closureLayerGroup.addTo(map);
-      if(!closureVisible && closureLayerGroup && map.hasLayer(closureLayerGroup)) map.removeLayer(closureLayerGroup);
+
+      if(
+        bridgeVisible &&
+        bridgeLayer &&
+        !map.hasLayer(bridgeLayer)
+      ){
+
+        bridgeLayer.addTo(map);
+
+      }
+
+
+      if(
+        !bridgeVisible &&
+        bridgeLayer &&
+        map.hasLayer(bridgeLayer)
+      ){
+
+        map.removeLayer(bridgeLayer);
+
+      }
+
+
+      if(
+        eventVisible &&
+        eventLayerGroup &&
+        !map.hasLayer(eventLayerGroup)
+      ){
+
+        eventLayerGroup.addTo(map);
+
+      }
+
+
+      if(
+        !eventVisible &&
+        eventLayerGroup &&
+        map.hasLayer(eventLayerGroup)
+      ){
+
+        map.removeLayer(
+          eventLayerGroup
+        );
+
+      }
+
+
+      if(
+        congestionVisible &&
+        congestionLayerGroup &&
+        !map.hasLayer(congestionLayerGroup)
+      ){
+
+        congestionLayerGroup.addTo(map);
+
+      }
+
+
+      if(
+        !congestionVisible &&
+        congestionLayerGroup &&
+        map.hasLayer(congestionLayerGroup)
+      ){
+
+        map.removeLayer(
+          congestionLayerGroup
+        );
+
+      }
+
+
+      if(
+        closureVisible &&
+        closureLayerGroup &&
+        !map.hasLayer(closureLayerGroup)
+      ){
+
+        closureLayerGroup.addTo(map);
+
+      }
+
+
+      if(
+        !closureVisible &&
+        closureLayerGroup &&
+        map.hasLayer(closureLayerGroup)
+      ){
+
+        map.removeLayer(
+          closureLayerGroup
+        );
+
+      }
+
     }
+
 
     function buildMap(){
-      map = L.map("map", {zoomControl:true}).setView([25.7617,-80.1918],10.4);
-      // Use an ArcGIS basemap instead of public OSM tiles so the prototype
-      // does not hit the tile-usage block shown in the screenshot.
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{
-        maxZoom:19,
-        attribution:'Tiles © Esri — Sources: Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community'
-      }).addTo(map);
 
-      bridgeLayer = L.esri.featureLayer({
-        url: BRIDGE_LAYER_URL,
-        style: {color:"#2e5c8a", weight:3, opacity:.8},
-        pointToLayer: function(g, latlng){
-          return L.circleMarker(latlng,{radius:4,color:"#fff",weight:1,fillColor:"#2e5c8a",fillOpacity:.9});
-        },
-        onEachFeature: function(feature, layer){
-          layer.bindTooltip((feature.properties?.STREETNAME || feature.properties?.NAME || "Bridge"), {sticky:true});
-          layer.on("click", bridgeClick);
+      map =
+        L.map(
+          "map",
+          {
+            zoomControl:true
+          }
+        )
+        .setView(
+          [25.7617,-80.1918],
+          10.4
+        );
+
+
+      /*
+        ArcGIS basemap is used instead of
+        public OpenStreetMap raster tiles.
+      */
+
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        {
+          maxZoom:19,
+
+          attribution:
+            "Tiles © Esri — Sources: Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community"
         }
-      }).addTo(map);
+      )
+      .addTo(map);
 
-      eventLayerGroup=L.layerGroup().addTo(map);
-      congestionLayerGroup=L.layerGroup().addTo(map);
-      closureLayerGroup=L.layerGroup();
 
-      document.querySelectorAll(".map-toggle").forEach(btn=>{
-        btn.addEventListener("click",()=>{
-          const type=btn.dataset.layer;
-          const state=type==="bridges"? !bridgeVisible : type==="events" ? !eventVisible : type==="congestion" ? !congestionVisible : !closureVisible;
-          btn.classList.toggle("active",state);
-          if(type==="bridges") bridgeVisible=state;
-          if(type==="events") eventVisible=state;
-          if(type==="congestion") congestionVisible=state;
-          if(type==="closures") closureVisible=state;
-          applyMapLayers();
-        });
-      });
+      bridgeLayer =
+        L.esri.featureLayer(
+          {
+            url:
+              BRIDGE_LAYER_URL,
+
+            style:
+              {
+                color:"#2e5c8a",
+                weight:3,
+                opacity:.8
+              },
+
+            pointToLayer:
+              function(
+                g,
+                latlng
+              ){
+
+                return
+                  L.circleMarker(
+                    latlng,
+                    {
+                      radius:4,
+                      color:"#fff",
+                      weight:1,
+                      fillColor:"#2e5c8a",
+                      fillOpacity:.9
+                    }
+                  );
+
+              },
+
+            onEachFeature:
+              function(
+                feature,
+                layer
+              ){
+
+                layer.bindTooltip(
+                  (
+                    feature.properties?.STREETNAME ||
+                    feature.properties?.NAME ||
+                    "Bridge"
+                  ),
+                  {
+                    sticky:true
+                  }
+                );
+
+
+                layer.on(
+                  "click",
+                  bridgeClick
+                );
+
+              }
+
+          }
+        )
+        .addTo(map);
+
+
+      eventLayerGroup =
+        L.layerGroup()
+          .addTo(map);
+
+
+      congestionLayerGroup =
+        L.layerGroup()
+          .addTo(map);
+
+
+      closureLayerGroup =
+        L.layerGroup();
+
+
+      document
+        .querySelectorAll(
+          ".map-toggle"
+        )
+        .forEach(
+          btn => {
+
+            btn.addEventListener(
+              "click",
+              () => {
+
+                const type =
+                  btn.dataset.layer;
+
+
+                const state =
+                  type === "bridges"
+                    ? !bridgeVisible
+                    : type === "events"
+                      ? !eventVisible
+                      : type === "congestion"
+                        ? !congestionVisible
+                        : !closureVisible;
+
+
+                btn.classList.toggle(
+                  "active",
+                  state
+                );
+
+
+                if(
+                  type === "bridges"
+                ){
+
+                  bridgeVisible =
+                    state;
+
+                }
+
+
+                if(
+                  type === "events"
+                ){
+
+                  eventVisible =
+                    state;
+
+                }
+
+
+                if(
+                  type === "congestion"
+                ){
+
+                  congestionVisible =
+                    state;
+
+                }
+
+
+                if(
+                  type === "closures"
+                ){
+
+                  closureVisible =
+                    state;
+
+                }
+
+
+                applyMapLayers();
+
+              }
+            );
+
+          }
+        );
+
     }
+
 
     async function loadLiveFeeds(){
-      let ok=true;
+
+      let ok =
+        true;
+
+
       try{
-        const [ev,cl] = await Promise.all([
-          arcgisQuery(CONGESTION_URL,{where:COUNTY_WHERE,outFields:"*",returnGeometry:"true",f:"json",resultRecordCount:"100",orderByFields:"UPDATED DESC"}),
-          arcgisQuery(CLOSURE_URL,{where:COUNTY_WHERE,outFields:"*",returnGeometry:"true",f:"json",resultRecordCount:"100",orderByFields:"UPDATED DESC"})
-        ]);
-        events=(ev.features||[]).map(f=>({
-          ...f.attributes,
-          LATITUDE:f.geometry?.y ?? f.attributes?.LATITUDE,
-          LONGITUDE:f.geometry?.x ?? f.attributes?.LONGITUDE
-        }));
-        closures=(cl.features||[]).map(f=>({
-          ...f.attributes,
-          LATITUDE:f.geometry?.y ?? f.attributes?.LAT,
-          LONGITUDE:f.geometry?.x ?? f.attributes?.LON
-        }));
-        document.getElementById("liveEventCount").textContent=events.length;
-        document.getElementById("liveClosureCount").textContent=closures.length;
-        const freshness = feedFreshness([
-          ...events.map(x=>x.UPDATED||x.TIMESTAMP||x.TIMESTR||""),
-          ...closures.map(x=>x.UPDATED||x.TIMESTAMP||x.TIMESTR||"")
-        ]);
-        const freshnessEl = document.getElementById("eventFeedMeta");
-        freshnessEl.textContent = freshness.stale ? "SOURCE FEED MAY BE STALE" : "LIVE · MIAMI-DADE";
-        freshnessEl.style.color = freshness.stale ? "#a36d19" : "";
-        document.getElementById("feedHealth").textContent = freshness.stale ? "connected, source timestamp older than 6 h" : "connected";
+
+        const [
+          ev,
+          cl
+        ] =
+          await Promise.all(
+            [
+
+              arcgisQuery(
+                CONGESTION_URL,
+                {
+                  where:
+                    COUNTY_WHERE,
+
+                  outFields:
+                    "*",
+
+                  returnGeometry:
+                    "true",
+
+                  f:
+                    "json",
+
+                  resultRecordCount:
+                    "100",
+
+                  orderByFields:
+                    "UPDATED DESC"
+                }
+              ),
+
+
+              arcgisQuery(
+                CLOSURE_URL,
+                {
+                  where:
+                    COUNTY_WHERE,
+
+                  outFields:
+                    "*",
+
+                  returnGeometry:
+                    "true",
+
+                  f:
+                    "json",
+
+                  resultRecordCount:
+                    "100",
+
+                  orderByFields:
+                    "UPDATED DESC"
+                }
+              )
+
+            ]
+          );
+
+
+        events =
+          (ev.features || [])
+          .map(
+            f => ({
+              ...f.attributes,
+
+              LATITUDE:
+                f.geometry?.y ??
+                f.attributes?.LATITUDE,
+
+              LONGITUDE:
+                f.geometry?.x ??
+                f.attributes?.LONGITUDE
+            })
+          );
+
+
+        closures =
+          (cl.features || [])
+          .map(
+            f => ({
+              ...f.attributes,
+
+              LATITUDE:
+                f.geometry?.y ??
+                f.attributes?.LATITUDE,
+
+              LONGITUDE:
+                f.geometry?.x ??
+                f.attributes?.LON
+            })
+          );
+
+
+        document.getElementById(
+          "liveEventCount"
+        ).textContent =
+          events.length;
+
+
+        document.getElementById(
+          "liveClosureCount"
+        ).textContent =
+          closures.length;
+
+
+        const freshness =
+          feedFreshness(
+            [
+
+              ...events.map(
+                x =>
+                  x.UPDATED ||
+                  x.TIMESTAMP ||
+                  x.TIMESTR ||
+                  ""
+              ),
+
+              ...closures.map(
+                x =>
+                  x.UPDATED ||
+                  x.TIMESTAMP ||
+                  x.TIMESTR ||
+                  ""
+              )
+
+            ]
+          );
+
+
+        const freshnessEl =
+          document.getElementById(
+            "eventFeedMeta"
+          );
+
+
+        freshnessEl.textContent =
+          freshness.stale
+            ? "SOURCE FEED MAY BE STALE"
+            : "LIVE · MIAMI-DADE";
+
+
+        freshnessEl.style.color =
+          freshness.stale
+            ? "#a36d19"
+            : "";
+
+
+        document.getElementById(
+          "feedHealth"
+        ).textContent =
+          freshness.stale
+            ? "connected, source timestamp older than 6 h"
+            : "connected";
+
+
         renderFeed();
+
         addEventMarkers();
+
         buildCongestionAndClosures();
-      }catch(err){
-        console.error(err);
-        ok=false;
-        document.getElementById("eventFeed").innerHTML='<div class="event-empty">The external public operational feed could not be reached during this refresh. The site will retry automatically.</div>';
+
       }
+      catch(err){
+
+        console.error(err);
+
+        ok =
+          false;
+
+
+        document.getElementById(
+          "eventFeed"
+        ).innerHTML =
+          `
+            <div class="event-empty">
+              The external public operational feed
+              could not be reached during this refresh.
+
+              The site will retry automatically.
+            </div>
+          `;
+
+      }
+
+
       setLiveState(ok);
-      const now=new Date();
-      document.getElementById("lastRefresh").textContent="LAST REFRESH: "+fmtTime(now.toISOString());
+
+
+      const now =
+        new Date();
+
+
+      document.getElementById(
+        "lastRefresh"
+      ).textContent =
+        "LAST REFRESH: " +
+        fmtTime(
+          now.toISOString()
+        );
+
+
       return ok;
+
     }
+
 
     function buildCongestionAndClosures(){
-      clearLayerGroup(congestionLayerGroup);
-      clearLayerGroup(closureLayerGroup);
-      congestionLayerGroup = L.layerGroup();
-      closureLayerGroup = L.layerGroup();
-      events.forEach(e=>{
-        const lat=Number(e.LATITUDE),lon=Number(e.LONGITUDE);
-        if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
-        L.circleMarker([lat,lon],{radius:8,weight:2,color:"#fff",fillColor:"#d9922e",fillOpacity:.52})
-          .bindPopup(`<strong>Congestion</strong><br>${esc(e.NAME||e.HIGHWAY||"Roadway congestion")}<br><small>${esc(e.SEVERITY||"")}</small>`)
-          .addTo(congestionLayerGroup);
-      });
-      closures.forEach(e=>{
-        const lat=Number(e.LATITUDE),lon=Number(e.LONGITUDE);
-        if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
-        L.circleMarker([lat,lon],{radius:8,weight:2,color:"#fff",fillColor:"#c24c3d",fillOpacity:.72})
-          .bindPopup(`<strong>Closure</strong><br>${esc(e.NAME||e.LOCATION||"Roadway closure")}<br><small>${esc(e.SEVERITY||e.URGENCY||"")}</small>`)
-          .addTo(closureLayerGroup);
-      });
+
+      clearLayerGroup(
+        congestionLayerGroup
+      );
+
+      clearLayerGroup(
+        closureLayerGroup
+      );
+
+
+      congestionLayerGroup =
+        L.layerGroup();
+
+
+      closureLayerGroup =
+        L.layerGroup();
+
+
+      events.forEach(
+        e => {
+
+          const lat =
+            Number(
+              e.LATITUDE
+            );
+
+          const lon =
+            Number(
+              e.LONGITUDE
+            );
+
+
+          if(
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lon)
+          ){
+
+            return;
+
+          }
+
+
+          L.circleMarker(
+            [lat,lon],
+            {
+              radius:8,
+              weight:2,
+              color:"#fff",
+              fillColor:"#d9922e",
+              fillOpacity:.52
+            }
+          )
+
+          .bindPopup(
+            `
+              <strong>
+                Congestion
+              </strong>
+
+              <br>
+
+              ${esc(
+                e.NAME ||
+                e.HIGHWAY ||
+                "Roadway congestion"
+              )}
+
+              <br>
+
+              <small>
+                ${esc(
+                  e.SEVERITY ||
+                  ""
+                )}
+              </small>
+            `
+          )
+
+          .addTo(
+            congestionLayerGroup
+          );
+
+        }
+      );
+
+
+      closures.forEach(
+        e => {
+
+          const lat =
+            Number(
+              e.LATITUDE
+            );
+
+          const lon =
+            Number(
+              e.LONGITUDE
+            );
+
+
+          if(
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lon)
+          ){
+
+            return;
+
+          }
+
+
+          L.circleMarker(
+            [lat,lon],
+            {
+              radius:8,
+              weight:2,
+              color:"#fff",
+              fillColor:"#c24c3d",
+              fillOpacity:.72
+            }
+          )
+
+          .bindPopup(
+            `
+              <strong>
+                Closure
+              </strong>
+
+              <br>
+
+              ${esc(
+                e.NAME ||
+                e.LOCATION ||
+                "Roadway closure"
+              )}
+
+              <br>
+
+              <small>
+                ${esc(
+                  e.SEVERITY ||
+                  e.URGENCY ||
+                  ""
+                )}
+              </small>
+            `
+          )
+
+          .addTo(
+            closureLayerGroup
+          );
+
+        }
+      );
+
+
       applyMapLayers();
+
     }
+
 
     function esc(v){
-      return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+
+      return
+        String(v ?? "")
+        .replace(
+          /[&<>"']/g,
+          m =>
+            ({
+              "&":"&amp;",
+              "<":"&lt;",
+              ">":"&gt;",
+              '"':"&quot;",
+              "'":"&#39;"
+            }[m])
+        );
+
     }
 
-    function goToSection(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth"});}
-    function usePrompt(p){document.getElementById("chatInput").value=p;askCopilot();}
+
+    function goToSection(id){
+
+      document
+        .getElementById(id)
+        ?.scrollIntoView(
+          {
+            behavior:"smooth"
+          }
+        );
+
+    }
+
+
+    function usePrompt(p){
+
+      document.getElementById(
+        "chatInput"
+      ).value =
+        p;
+
+      askCopilot();
+
+    }
+
 
     function askCopilot(){
-      const input=document.getElementById("chatInput");
-      const q=(input.value||"").trim(); if(!q) return;
-      const box=document.getElementById("messages");
-      box.insertAdjacentHTML("beforeend",`<div class="msg user"><div class="bubble">${esc(q)}</div></div>`);
-      const answer=generateResponse(q);
-      setTimeout(()=>{
-        box.insertAdjacentHTML("beforeend",`<div class="msg ai"><div class="bubble">${answer}</div></div>`);
-        box.scrollTop=box.scrollHeight;
-      },240);
-      input.value="";
-      box.scrollTop=box.scrollHeight;
+
+      const input =
+        document.getElementById(
+          "chatInput"
+        );
+
+
+      const q =
+        (
+          input.value ||
+          ""
+        ).trim();
+
+
+      if(!q){
+        return;
+      }
+
+
+      const box =
+        document.getElementById(
+          "messages"
+        );
+
+
+      box.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div class="msg user">
+
+            <div class="bubble">
+              ${esc(q)}
+            </div>
+
+          </div>
+        `
+      );
+
+
+      const answer =
+        generateResponse(q);
+
+
+      setTimeout(
+        () => {
+
+          box.insertAdjacentHTML(
+            "beforeend",
+            `
+              <div class="msg ai">
+
+                <div class="bubble">
+                  ${answer}
+                </div>
+
+              </div>
+            `
+          );
+
+
+          box.scrollTop =
+            box.scrollHeight;
+
+        },
+        240
+      );
+
+
+      input.value =
+        "";
+
+
+      box.scrollTop =
+        box.scrollHeight;
+
     }
+
 
     function generateResponse(q){
-      const lower=q.toLowerCase();
-      const liveEvents=events.length, liveClosures=closures.length;
-      const selected = selectedBridge?.feature?.properties?.STREETNAME || selectedBridge?.feature?.properties?.NAME || "the selected bridge";
-      if(lower.includes("rehab")||lower.includes("rehabilitation")||lower.includes("investigate")){
-        return `<strong>BridgeMind assessment framework</strong><br>Before recommending an intervention for ${esc(selected)}, combine structural condition, inspection history, material and span, traffic importance, alternate routes, flood or hurricane exposure, and documented rehabilitation history. In production, the recommendation should be grounded in validated agency guidance and the bridge's verified NBI / inspection record.`;
+
+      const lower =
+        q.toLowerCase();
+
+
+      const liveEvents =
+        events.length;
+
+
+      const liveClosures =
+        closures.length;
+
+
+      const selected =
+        selectedBridge?.feature?.properties?.STREETNAME ||
+        selectedBridge?.feature?.properties?.NAME ||
+        "the selected bridge";
+
+
+      if(
+        lower.includes("rehab") ||
+        lower.includes("rehabilitation") ||
+        lower.includes("investigate")
+      ){
+
+        return `
+          <strong>
+            BridgeMind assessment framework
+          </strong>
+
+          <br>
+
+          Before recommending an intervention for
+          ${esc(selected)},
+          combine structural condition,
+          inspection history,
+          material and span,
+          traffic importance,
+          alternate routes,
+          flood or hurricane exposure,
+          and documented rehabilitation history.
+
+          In production, the recommendation should be
+          grounded in validated agency guidance and the
+          bridge's verified NBI / inspection record.
+        `;
+
       }
-      if(lower.includes("closure")||lower.includes("storm")||lower.includes("hurricane")){
-        return `<strong>Scenario context</strong><br>The prototype would combine the bridge location with the current operational feed, then evaluate rerouting, travel-time pressure, emergency access, and community exposure under the selected scenario. Current public feed snapshot: ${liveClosures} closure event(s) and ${liveEvents} congestion event(s) returned for Miami-Dade.`;
+
+
+      if(
+        lower.includes("closure") ||
+        lower.includes("storm") ||
+        lower.includes("hurricane")
+      ){
+
+        return `
+          <strong>
+            Scenario context
+          </strong>
+
+          <br>
+
+          The prototype would combine the bridge location
+          with the current operational feed, then evaluate
+          rerouting, travel-time pressure, emergency access,
+          and community exposure under the selected scenario.
+
+          Current public feed snapshot:
+          ${liveClosures}
+          closure event(s) and
+          ${liveEvents}
+          congestion event(s)
+          returned for Miami-Dade.
+        `;
+
       }
-      if(lower.includes("congestion")||lower.includes("traffic")||lower.includes("operational")){
-        return `<strong>Live operational context</strong><br>The current public feed returned <strong>${liveEvents}</strong> congestion point(s) and <strong>${liveClosures}</strong> closure point(s) for Miami-Dade at the latest refresh. Use the map to inspect the spatial relationship with bridges before interpreting local risk.`;
+
+
+      if(
+        lower.includes("congestion") ||
+        lower.includes("traffic") ||
+        lower.includes("operational")
+      ){
+
+        return `
+          <strong>
+            Live operational context
+          </strong>
+
+          <br>
+
+          The current public feed returned
+          <strong>
+            ${liveEvents}
+          </strong>
+          congestion point(s)
+          and
+          <strong>
+            ${liveClosures}
+          </strong>
+          closure point(s)
+          for Miami-Dade at the latest refresh.
+
+          Use the map to inspect the spatial relationship
+          with bridges before interpreting local risk.
+        `;
+
       }
-      if(lower.includes("network")||lower.includes("connectivity")){
-        return `<strong>Why connectivity matters</strong><br>A bridge's consequence depends on more than its structural condition. A closure can redirect traffic, increase travel distance, reduce redundancy, affect emergency access, and concentrate impacts on particular communities. That network effect is a core BridgeMind input.`;
+
+
+      if(
+        lower.includes("network") ||
+        lower.includes("connectivity")
+      ){
+
+        return `
+          <strong>
+            Why connectivity matters
+          </strong>
+
+          <br>
+
+          A bridge's consequence depends on more than
+          its structural condition.
+
+          A closure can redirect traffic,
+          increase travel distance,
+          reduce redundancy,
+          affect emergency access,
+          and concentrate impacts on particular communities.
+
+          That network effect is a core BridgeMind input.
+        `;
+
       }
-      return `<strong>BridgeMind prototype response</strong><br>I can connect this question to live roadway events, bridge geometry, and the research framework. For a validated engineering answer, the production system should use the verified bridge record, retrieval-grounded guidance, and a calibrated network simulation rather than relying on the conversational layer alone.`;
+
+
+      return `
+        <strong>
+          BridgeMind prototype response
+        </strong>
+
+        <br>
+
+        I can connect this question to live roadway events,
+        bridge geometry, and the research framework.
+
+        For a validated engineering answer,
+        the production system should use the verified
+        bridge record, retrieval-grounded guidance,
+        and a calibrated network simulation rather than
+        relying on the conversational layer alone.
+      `;
+
     }
+
 
     function runSimulation(){
-      const c=Number(document.getElementById("stormRange").value);
-      const type=document.getElementById("closureSelect").value;
-      const svi=document.getElementById("sviSelect").value;
-      const t=Math.round(24 + c*12 + (type==="causeway"?12:type==="corridor"?8:0));
-      const d=Math.round(18 + c*10 + (type==="corridor"?10:4));
-      const e=Math.round(25 + c*11 + (svi==="aware"?7:0));
-      document.getElementById("stormLabel").textContent="Category "+c;
-      document.getElementById("scenarioTitle").textContent=`${type==="selected"?"Selected bridge":type==="corridor"?"High-connectivity corridor":"Barrier-island connection"} closure after Category ${c}`;
-      document.getElementById("scenarioText").textContent=`Under this demonstrative scenario, BridgeMind would combine live roadway context with the bridge network model to evaluate closure consequences. Current operational snapshot: ${events.length} congestion point(s) and ${closures.length} closure point(s) are being monitored in Miami-Dade.`;
-      document.getElementById("g1").textContent=t+"%"; document.getElementById("fill1").style.width=t+"%";
-      document.getElementById("g2").textContent=d+"%"; document.getElementById("fill2").style.width=d+"%";
-      document.getElementById("g3").textContent=e+"%"; document.getElementById("fill3").style.width=e+"%";
-      document.getElementById("simulationNote").textContent="NEXT: run validated traffic assignment + alternate-route analysis + equity-weighted impact calculation";
+
+      const c =
+        Number(
+          document.getElementById(
+            "stormRange"
+          ).value
+        );
+
+
+      const type =
+        document.getElementById(
+          "closureSelect"
+        ).value;
+
+
+      const svi =
+        document.getElementById(
+          "sviSelect"
+        ).value;
+
+
+      const t =
+        Math.round(
+          24 +
+          c * 12 +
+          (
+            type === "causeway"
+              ? 12
+              : type === "corridor"
+                ? 8
+                : 0
+          )
+        );
+
+
+      const d =
+        Math.round(
+          18 +
+          c * 10 +
+          (
+            type === "corridor"
+              ? 10
+              : 4
+          )
+        );
+
+
+      const e =
+        Math.round(
+          25 +
+          c * 11 +
+          (
+            svi === "aware"
+              ? 7
+              : 0
+          )
+        );
+
+
+      document.getElementById(
+        "stormLabel"
+      ).textContent =
+        "Category " +
+        c;
+
+
+      document.getElementById(
+        "scenarioTitle"
+      ).textContent =
+        `${
+          type === "selected"
+            ? "Selected bridge"
+            : type === "corridor"
+              ? "High-connectivity corridor"
+              : "Barrier-island connection"
+        } closure after Category ${c}`;
+
+
+      document.getElementById(
+        "scenarioText"
+      ).textContent =
+        `
+          Under this demonstrative scenario,
+          BridgeMind would combine live roadway
+          context with the bridge network model
+          to evaluate closure consequences.
+
+          Current operational snapshot:
+          ${events.length}
+          congestion point(s) and
+          ${closures.length}
+          closure point(s)
+          are being monitored in Miami-Dade.
+        `;
+
+
+      document.getElementById(
+        "g1"
+      ).textContent =
+        t + "%";
+
+
+      document.getElementById(
+        "fill1"
+      ).style.width =
+        t + "%";
+
+
+      document.getElementById(
+        "g2"
+      ).textContent =
+        d + "%";
+
+
+      document.getElementById(
+        "fill2"
+      ).style.width =
+        d + "%";
+
+
+      document.getElementById(
+        "g3"
+      ).textContent =
+        e + "%";
+
+
+      document.getElementById(
+        "fill3"
+      ).style.width =
+        e + "%";
+
+
+      document.getElementById(
+        "simulationNote"
+      ).textContent =
+        `
+          NEXT:
+          run validated traffic assignment
+          + alternate-route analysis
+          + equity-weighted impact calculation
+        `;
+
     }
 
-    document.getElementById("stormRange").addEventListener("input",runSimulation);
-    document.getElementById("closureSelect").addEventListener("change",runSimulation);
-    document.getElementById("sviSelect").addEventListener("change",runSimulation);
-    document.getElementById("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter")askCopilot();});
+
+    document
+      .getElementById(
+        "stormRange"
+      )
+      .addEventListener(
+        "input",
+        runSimulation
+      );
+
+
+    document
+      .getElementById(
+        "closureSelect"
+      )
+      .addEventListener(
+        "change",
+        runSimulation
+      );
+
+
+    document
+      .getElementById(
+        "sviSelect"
+      )
+      .addEventListener(
+        "change",
+        runSimulation
+      );
+
+
+    document
+      .getElementById(
+        "chatInput"
+      )
+      .addEventListener(
+        "keydown",
+        e => {
+
+          if(
+            e.key === "Enter"
+          ){
+
+            askCopilot();
+
+          }
+
+        }
+      );
+
 
     buildMap();
+
     loadLiveFeeds();
-    setInterval(loadLiveFeeds, refreshMs);
+
+    setInterval(
+      loadLiveFeeds,
+      refreshMs
+    );
+
     runSimulation();
+
   </script>
+
 </body>
 </html>
